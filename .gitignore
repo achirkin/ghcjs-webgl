@@ -1,0 +1,27 @@
+dist
+cabal-dev
+*.o
+*.hi
+*.chi
+*.chs.h
+.virtualenv
+.hsenv
+.HTF/
+.cabal-sandbox/
+cabal.sandbox.config
+cabal.config
+
+# eclipse stuff
+.dist-buildwrapper/
+.project
+.settings/
+
+# leksah stuff
+*.lksf
+
+# profiling
+*.hp
+*.prof
+*.htm
+*.html
+
