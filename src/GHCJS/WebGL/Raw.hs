@@ -113,17 +113,17 @@ foreign import javascript unsafe "$1.colorMask($2, $3, $4, $5)"
 foreign import javascript unsafe "$1.compileShader($2)"
     compileShader :: Ctx -> Shader -> IO ()
 
-foreign import javascript unsafe "$1.compressedTexImage2D($2, $3, $4, $5, $6, $7, $8.buf)"
-    compressedTexImage2D' :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> JSRef ArrayBuffer -> IO ()
+foreign import javascript unsafe "$1.compressedTexImage2D($2, $3, $4, $5, $6, $7, $8)"
+    compressedTexImage2D' :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> TypedArray a -> IO ()
 
-compressedTexImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> ArrayBuffer -> IO ()
-compressedTexImage2D q w e r t y u = compressedTexImage2D' q w e r t y u . unsafeCoerce
+--compressedTexImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> ArrayBuffer -> IO ()
+--compressedTexImage2D q w e r t y u = compressedTexImage2D' q w e r t y u . unsafeCoerce
 
-foreign import javascript unsafe "$1.compressedTexSubImage2D($2, $3, $4, $5, $6, $7, $8, $9.buf)"
-    compressedTexSubImage2D' :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> JSRef ArrayBuffer -> IO ()
+foreign import javascript unsafe "$1.compressedTexSubImage2D($2, $3, $4, $5, $6, $7, $8, $9)"
+    compressedTexSubImage2D' :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> TypedArray a -> IO ()
 
-compressedTexSubImage2D :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> ArrayBuffer -> IO ()
-compressedTexSubImage2D q w e r t y u i = compressedTexSubImage2D' q w e r t y u i . unsafeCoerce
+--compressedTexSubImage2D :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> ArrayBuffer -> IO ()
+--compressedTexSubImage2D q w e r t y u i = compressedTexSubImage2D' q w e r t y u i . unsafeCoerce
 
 foreign import javascript unsafe "$1.copyTexImage2D($2, $3, $4, $5, $6, $7, $8, $9)"
     copyTexImage2D :: Ctx -> GLenum -> GLint -> GLenum -> GLint -> GLint -> GLsizei -> GLsizei-> GLint-> IO ()
@@ -318,12 +318,12 @@ foreign import javascript unsafe "$1.pixelStorei($2, $3)"
 foreign import javascript unsafe "$1.polygonOffset($2, $3)"
     polygonOffset :: Ctx -> GLfloat -> GLfloat -> IO ()
 
-foreign import javascript unsafe "$1.readPixels($2, $3, $4, $5, $6, $7, $8.buf)"
-    readPixels' :: Ctx -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> JSRef ArrayBuffer -> IO ()
+foreign import javascript unsafe "$1.readPixels($2, $3, $4, $5, $6, $7, $8)"
+    readPixels :: Ctx -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> TypedArray a -> IO ()
 
 
-readPixels :: Ctx -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> ArrayBuffer -> IO ()
-readPixels q w e r t y u = readPixels' q w e r t y u . unsafeCoerce
+--readPixels :: Ctx -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> ArrayBuffer -> IO ()
+--readPixels q w e r t y u = readPixels' q w e r t y u . unsafeCoerce
 
 foreign import javascript unsafe "$1.renderbufferStorage($2, $3, $4, $5)"
     renderbufferStorage :: Ctx -> GLenum -> GLenum -> GLsizei -> GLsizei -> IO ()
@@ -355,11 +355,11 @@ foreign import javascript unsafe "$1.stencilOp($2, $3, $4)"
 foreign import javascript unsafe "$1.stencilOpSeparate($2, $3, $4, $5)"
     stencilOpSeparate :: Ctx -> GLenum -> GLenum -> GLenum -> GLenum -> IO ()
 
-foreign import javascript unsafe "$1.texImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10.buf)"
-    texImage2D' :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> JSRef ArrayBuffer -> IO ()
+foreign import javascript unsafe "$1.texImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
+    texImage2D' :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> TypedArray a -> IO ()
 
-texImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> ArrayBuffer -> IO ()
-texImage2D q w e r t y u i o = texImage2D' q w e r t y u i o . unsafeCoerce
+--texImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> ArrayBuffer -> IO ()
+--texImage2D q w e r t y u i o = texImage2D' q w e r t y u i o . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.texImage2D()"
@@ -375,12 +375,12 @@ foreign import javascript unsafe "$1.texParameterf($2, $3, $4)"
 foreign import javascript unsafe "$1.texParameteri($2, $3, $4)"
     texParameteri :: Ctx -> GLenum -> GLenum -> GLint-> IO ()
 
-foreign import javascript unsafe "$1.texSubImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10.buf)"
-    texSubImage2D' :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> JSRef ArrayBuffer -> IO ()
+foreign import javascript unsafe "$1.texSubImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
+    texSubImage2D' :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> TypedArray a -> IO ()
 
 
-texSubImage2D :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> ArrayBuffer -> IO ()
-texSubImage2D q w e r t y u i o = texSubImage2D' q w e r t y u i o . unsafeCoerce
+--texSubImage2D :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> ArrayBuffer -> IO ()
+--texSubImage2D q w e r t y u i o = texSubImage2D' q w e r t y u i o . unsafeCoerce
 {-
 
 foreign import javascript unsafe "$1.texSubImage2D()"
