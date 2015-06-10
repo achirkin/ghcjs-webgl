@@ -356,7 +356,7 @@ foreign import javascript unsafe "$1.stencilOpSeparate($2, $3, $4, $5)"
     stencilOpSeparate :: Ctx -> GLenum -> GLenum -> GLenum -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.texImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
-    texImage2D' :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> TypedArray a -> IO ()
+    texImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> TypedArray a -> IO ()
 
 --texImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> ArrayBuffer -> IO ()
 --texImage2D q w e r t y u i o = texImage2D' q w e r t y u i o . unsafeCoerce
