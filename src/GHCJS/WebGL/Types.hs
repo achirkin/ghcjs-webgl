@@ -25,7 +25,7 @@ module GHCJS.WebGL.Types
     , Buffer
     , FrameBuffer
     , RenderBuffer
-    , Texture
+    , Texture, TexImageSource
     , UniformLocation
     , ActiveInfo, aiSize, aiType, aiName
     , ShaderPrecisionFormat
@@ -141,6 +141,9 @@ type RenderBuffer = JSRef RenderBuffer_
 
 data Texture_
 type Texture = JSRef Texture_
+
+data TexImageSource_
+type TexImageSource = JSRef TexImageSource_
 
 data UniformLocation_
 type UniformLocation = JSRef UniformLocation_
