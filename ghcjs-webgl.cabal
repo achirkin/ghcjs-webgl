@@ -20,7 +20,7 @@ category: OpenGL, WebGL, GHCJS
 author: Artem Chirkin
 
 library
-    build-depends: primitive >=0.5.4.0 && < 0.6,
+    build-depends: primitive >=0.5.4.0 && < 0.7,
                    base >=4.2 && <5,
                    ghcjs-base >=0.1.0.0 && < 0.2
     exposed-modules: GHCJS.WebGL
@@ -35,7 +35,7 @@ library
 
 test-suite SimpleWebGL
     type: exitcode-stdio-1.0
-    build-depends: primitive >=0.5.4.0 && < 0.6,
+    build-depends: primitive >=0.5.4.0 && < 0.7,
                    base >=4.2 && <5,
                    ghcjs-base >=0.1.0.0 && < 0.2
     main-is: SimpleWebGL.hs
