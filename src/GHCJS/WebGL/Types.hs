@@ -30,13 +30,13 @@ module GHCJS.WebGL.Types
     , ActiveInfo, aiSize, aiType, aiName
     , ShaderPrecisionFormat
     , ArrayBuffer, mallocArrayBuffer, newArrayBuffer
-    , TypedArrayValue (typedArrayView, newTypedArray, setIdx, getIdx)
+    , TypedArrayValue (typedArrayView, typedArrayViewS, newTypedArray, setIdx, getIdx)
     , TypedArray, fillTypedArray, getBuffer
 ) where
 
 import qualified Data.Foldable as FL
 
-import Data.Primitive.ByteArray (MutableByteArray, newByteArray, writeByteArray)
+import Data.Primitive.ByteArray (MutableByteArray,ByteArray, newByteArray, writeByteArray)
 import Data.Primitive.Types (Prim)
 import Data.Primitive (sizeOf)
 import Control.Monad.Primitive (PrimState)
@@ -173,6 +173,8 @@ class TypedArrayValue a where
     data TypedArray_ a
     -- | TypedArray view of an ArrayBuffer
     typedArrayView :: ArrayBuffer -> IO (TypedArray a)
+    -- | TypedArray view of an ArrayBuffer
+    typedArrayViewS :: ByteArray -> IO (TypedArray a)
     -- | new TypedArray given the number of elements
     newTypedArray :: Int -> IO (TypedArray a)
     -- | set value at index
@@ -186,6 +188,7 @@ type TypedArray a = JSRef (TypedArray_ a)
 instance TypedArrayValue GLbyte where
     data TypedArray_ GLbyte
     typedArrayView = int8ArrayB_ . unsafeCoerce
+    typedArrayViewS = int8ArrayB_ . unsafeCoerce
     newTypedArray = int8Array_
     setIdx = setIdxInt8
     getIdx = getIdxInt8
@@ -193,6 +196,7 @@ instance TypedArrayValue GLbyte where
 instance TypedArrayValue GLubyte where
     data TypedArray_ GLubyte
     typedArrayView = uint8ArrayB_ . unsafeCoerce
+    typedArrayViewS = uint8ArrayB_ . unsafeCoerce
     newTypedArray = uint8Array_
     setIdx = setIdxUint8
     getIdx = getIdxUint8
@@ -200,6 +204,7 @@ instance TypedArrayValue GLubyte where
 instance TypedArrayValue GLshort where
     data TypedArray_ GLshort
     typedArrayView = int16ArrayB_ . unsafeCoerce
+    typedArrayViewS = int16ArrayB_ . unsafeCoerce
     newTypedArray = int16Array_
     setIdx = setIdxInt16
     getIdx = getIdxInt16
@@ -207,6 +212,7 @@ instance TypedArrayValue GLshort where
 instance TypedArrayValue GLushort where
     data TypedArray_ GLushort
     typedArrayView = uint16ArrayB_ . unsafeCoerce
+    typedArrayViewS = uint16ArrayB_ . unsafeCoerce
     newTypedArray = uint16Array_
     setIdx = setIdxUint16
     getIdx  = getIdxUint16
@@ -214,6 +220,7 @@ instance TypedArrayValue GLushort where
 instance TypedArrayValue GLint where
     data TypedArray_ GLint
     typedArrayView = int32ArrayB_ . unsafeCoerce
+    typedArrayViewS = int32ArrayB_ . unsafeCoerce
     newTypedArray = int32Array_
     setIdx = setIdxInt32
     getIdx = getIdxInt32
@@ -221,6 +228,7 @@ instance TypedArrayValue GLint where
 instance TypedArrayValue GLuint where
     data TypedArray_ GLuint
     typedArrayView = uint32ArrayB_ . unsafeCoerce
+    typedArrayViewS = uint32ArrayB_ . unsafeCoerce
     newTypedArray = uint32Array_
     setIdx = setIdxUint32
     getIdx = getIdxUint32
@@ -228,6 +236,7 @@ instance TypedArrayValue GLuint where
 instance TypedArrayValue GLfloat where
     data TypedArray_ GLfloat
     typedArrayView = float32ArrayB_ . unsafeCoerce
+    typedArrayViewS = float32ArrayB_ . unsafeCoerce
     newTypedArray = float32Array_
     setIdx = setIdxFloat32
     getIdx = getIdxFloat32
@@ -235,6 +244,7 @@ instance TypedArrayValue GLfloat where
 instance TypedArrayValue GLdouble where
     data TypedArray_ GLdouble
     typedArrayView = float64ArrayB_ . unsafeCoerce
+    typedArrayViewS = float64ArrayB_ . unsafeCoerce
     newTypedArray = float64Array_
     setIdx = setIdxFloat64
     getIdx = getIdxFloat64

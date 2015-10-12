@@ -1,6 +1,6 @@
 name: ghcjs-webgl
 version: 0.2
-cabal-version: >=1.22
+cabal-version: >= 1.22
 build-type: Simple
 license: BSD3
 license-file: LICENSE
@@ -22,7 +22,7 @@ author: Artem Chirkin
 library
     build-depends: primitive >=0.5.4.0 && < 0.7,
                    base >=4.2 && <5,
-                   ghcjs-base >=0.1.0.0 && < 0.2
+                   ghcjs-base ==0.1.*
     exposed-modules: GHCJS.WebGL
                      GHCJS.WebGL.Raw
                      GHCJS.WebGL.Const
@@ -37,7 +37,7 @@ test-suite SimpleWebGL
     type: exitcode-stdio-1.0
     build-depends: primitive >=0.5.4.0 && < 0.7,
                    base >=4.2 && <5,
-                   ghcjs-base >=0.1.0.0 && < 0.2
+                   ghcjs-base >=0.1.0.0 && < 0.3
     main-is: SimpleWebGL.hs
     other-modules: GHCJS.WebGL
     buildable: True

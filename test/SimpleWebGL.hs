@@ -37,8 +37,9 @@ main = do
 
 
 -- | small JS helper to create a canvas element
-foreign import javascript unsafe "document.body.innerHTML = '<canvas id=\"glcanvas\" width=\"800\" height=\"400\"></canvas>'; $r = document.getElementById(\"glcanvas\");"
-	createCanvas :: IO (JSRef a)
+foreign import javascript unsafe "document.body.innerHTML = '<canvas id=\"glcanvas\" width=\"800\" height=\"400\"></canvas>';\
+    \ $r = document.getElementById(\"glcanvas\");"
+    createCanvas :: IO (JSRef a)
 
 -- | initialize shader program and get attribute and uniform locations
 initShaders :: Ctx -> IO (UniformLocation, GLuint, GLuint)
@@ -78,7 +79,8 @@ getShader gl t src = do
 packVertColors :: [GLfloat] -> [GLubyte]
                -> MutableByteArray (PrimState IO) -> IO ()
 packVertColors pnts cls p = f pnts cls 0
-    where f (x:y:z:ps) (r:g:b:cs) i = do
+    where f :: [GLfloat] -> [GLubyte] -> Int -> IO ()
+          f (x:y:z:ps) (r:g:b:cs) i = do
             writeByteArray p (4*i) x
             writeByteArray p (4*i+1) y
             writeByteArray p (4*i+2) z

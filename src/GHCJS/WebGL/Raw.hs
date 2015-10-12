@@ -20,6 +20,7 @@ import GHCJS.Types
 
 import GHCJS.WebGL.Types
 
+import Data.Primitive.ByteArray (ByteArray)
 import Unsafe.Coerce (unsafeCoerce)
 
 
@@ -74,6 +75,12 @@ foreign import javascript unsafe "$1.bufferData($2, $3.buf, $4)"
 bufferData :: Ctx -> GLenum -> ArrayBuffer -> GLenum -> IO ()
 bufferData gl t buf dr = bufferData' gl t (unsafeCoerce buf) dr
 
+foreign import javascript unsafe "$1.bufferData($2, $3.buf, $4)"
+    bufferDataS' :: Ctx -> GLenum -> JSRef ByteArray -> GLenum -> IO ()
+
+bufferDataS :: Ctx -> GLenum -> ByteArray -> GLenum -> IO ()
+bufferDataS gl t buf dr = bufferDataS' gl t (unsafeCoerce buf) dr
+
 {-
 foreign import javascript unsafe "$1.bufferData($2, $3, $4)"
     bufferData :: Ctx -> GLenum -> ArrayBuffer -> GLenum -> IO ()
@@ -84,6 +91,13 @@ foreign import javascript unsafe "$1.bufferSubData($2, $3, $4.buf)"
 
 bufferSubData :: Ctx -> GLenum -> GLintptr -> ArrayBuffer -> IO ()
 bufferSubData a b c = bufferSubData' a b c . unsafeCoerce
+
+
+foreign import javascript unsafe "$1.bufferSubData($2, $3, $4.buf)"
+    bufferSubDataS' :: Ctx -> GLenum -> GLintptr -> JSRef ByteArray -> IO ()
+
+bufferSubDataS :: Ctx -> GLenum -> GLintptr -> ByteArray -> IO ()
+bufferSubDataS a b c = bufferSubData' a b c . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.bufferSubData($2, $3, $4)"
