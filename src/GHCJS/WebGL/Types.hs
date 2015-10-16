@@ -1,6 +1,4 @@
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, TypeSynonymInstances #-}
-
+{-# OPTIONS_GHC -fno-warn-unused-binds #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  GHCJS.WebGL.Types
@@ -19,34 +17,21 @@ module GHCJS.WebGL.Types
     ( GLboolean, GLbyte, GLubyte, GLshort, GLushort, GLint, GLuint
     , GLfixed, GLint64, GLuint64, GLsizei, GLenum, GLintptr, GLsizeiptr
     , GLsync, GLbitfield, GLhalf, GLfloat, GLclampf, GLdouble, GLclampd
-    , Ctx, getCtx
-    , Program
-    , Shader
-    , Buffer
-    , FrameBuffer
-    , RenderBuffer
-    , Texture, TexImageSource
-    , UniformLocation
-    , ActiveInfo, aiSize, aiType, aiName
-    , ShaderPrecisionFormat
-    , ArrayBuffer, mallocArrayBuffer, newArrayBuffer
-    , TypedArrayValue (typedArrayView, typedArrayViewS, newTypedArray, setIdx, getIdx)
-    , TypedArray, fillTypedArray, getBuffer
+    , WebGLRenderingContext
+    , WebGLProgram
+    , WebGLShader
+    , WebGLBuffer
+    , WebGLFramebuffer
+    , WebGLRenderbuffer
+    , WebGLTexture, TexImageSource
+    , WebGLUniformLocation
+    , WebGLActiveInfo, aiSize, aiType, aiName
+    , WebGLShaderPrecisionFormat, rangeMin, rangeMax, precision
 ) where
 
-import qualified Data.Foldable as FL
-
-import Data.Primitive.ByteArray (MutableByteArray,ByteArray, newByteArray, writeByteArray)
-import Data.Primitive.Types (Prim)
-import Data.Primitive (sizeOf)
-import Control.Monad.Primitive (PrimState)
-
 import GHCJS.Types
-import GHCJS.Foreign (wrapMutableBuffer)
 import Data.Word
 import Foreign hiding (sizeOf)
-import qualified Control.Monad as M
-import Unsafe.Coerce
 
 -- | 8bit boolean.
 type GLboolean = Bool -- Word8
@@ -56,9 +41,6 @@ type GLbyte = Int8 -- CSChar
 
 -- | 8bit unsigned binary integer.
 type GLubyte = Word8 -- CUChar
-
--- | 8bit characters making up strings.
---type GLchar = CChar
 
 -- | 16bit signed two\'s complement binary integer.
 type GLshort = Int16 -- CShort
@@ -73,8 +55,8 @@ type GLint = Int32 -- CInt
 type GLuint = Word32 -- CUInt
 
 -- | 32bit signed two\'s complement 16.16 scaled integer.
+--   NOTE: OpenGL ES uses khronos_int32_t for this.
 type GLfixed = Int32 -- CInt
--- NOTE: OpenGL ES uses khronos_int32_t for this.
 
 -- | 64bit signed two\'s complement binary integer.
 type GLint64 = Int64
@@ -89,12 +71,12 @@ type GLsizei = Int32 -- Word32 -- CInt
 type GLenum = Word32
 
 -- | Pointer-sized signed two\'s complement binary integer.
+--   NOTE: OpenGL ES uses khronos_intptr_t for this.
 type GLintptr = Int32 --CPtrdiff
--- NOTE: OpenGL ES uses khronos_intptr_t for this.
 
 -- | Pointer-sized non-negative binary integer size.
+--   NOTE: OpenGL ES uses khronos_ssize_t for this.
 type GLsizeiptr = Word32 -- CPtrdiff
--- NOTE: OpenGL ES uses khronos_ssize_t for this.
 
 -- | Pointer-sized sync object handle.
 type GLsync = Ptr ()
@@ -117,238 +99,96 @@ type GLdouble = Double
 -- | 64bit floating-point value clamped to [0, 1].
 type GLclampd = Double
 
-data Ctx_
--- | WebGL Context
-type Ctx = JSRef Ctx_
 
--- | ArrayBuffer in JS
-type ArrayBuffer = MutableByteArray (PrimState IO)
+--   TODO : dictionary WebGLContextAttributes
+-- | The WebGLRenderingContext represents the API allowing OpenGL ES 2.0 style rendering into the canvas element.
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.14
+newtype WebGLRenderingContext = WebGLRenderingContext JSVal
+instance IsJSVal WebGLRenderingContext
 
-data Program_
-type Program = JSRef Program_
+-- | The WebGLBuffer interface represents an OpenGL Buffer Object.
+--   The underlying object is created as if by calling glGenBuffers (OpenGL ES 2.0 §2.9, man page),
+--   bound as if by calling glBindBuffer (OpenGL ES 2.0 §2.9, man page)
+--   and destroyed as if by calling glDeleteBuffers (OpenGL ES 2.0 §2.9, man page).
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.4
+newtype WebGLBuffer = WebGLBuffer JSVal
+instance IsJSVal WebGLBuffer
 
-data Shader_
-type Shader = JSRef Shader_
+-- | The WebGLFramebuffer interface represents an OpenGL Framebuffer Object.
+--   The underlying object is created as if by calling glGenFramebuffers (OpenGL ES 2.0 §4.4.1, man page),
+--   bound as if by calling glBindFramebuffer (OpenGL ES 2.0 §4.4.1, man page)
+--   and destroyed as if by calling glDeleteFramebuffers (OpenGL ES 2.0 §4.4.1, man page).
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.5
+newtype WebGLFramebuffer = WebGLFramebuffer JSVal
+instance IsJSVal WebGLFramebuffer
 
-data Buffer_
-type Buffer = JSRef Buffer_
+-- | The WebGLProgram interface represents an OpenGL Program Object.
+--   The underlying object is created as if by calling glCreateProgram (OpenGL ES 2.0 §2.10.3, man page),
+--   used as if by calling glUseProgram (OpenGL ES 2.0 §2.10.3, man page)
+--   and destroyed as if by calling glDeleteProgram (OpenGL ES 2.0 §2.10.3, man page).
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.6
+newtype WebGLProgram = WebGLProgram JSVal
+instance IsJSVal WebGLProgram
 
-data FrameBuffer_
-type FrameBuffer = JSRef FrameBuffer_
+-- | The WebGLRenderbuffer interface represents an OpenGL Renderbuffer Object.
+--   The underlying object is created as if by calling glGenRenderbuffers (OpenGL ES 2.0 §4.4.3, man page),
+--   bound as if by calling glBindRenderbuffer (OpenGL ES 2.0 §4.4.3, man page)
+--   and destroyed as if by calling glDeleteRenderbuffers (OpenGL ES 2.0 §4.4.3, man page).
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.7
+newtype WebGLRenderbuffer = WebGLRenderbuffer JSVal
+instance IsJSVal WebGLRenderbuffer
 
-data RenderBuffer_
-type RenderBuffer = JSRef RenderBuffer_
+-- | The WebGLShader interface represents an OpenGL Shader Object.
+--   The underlying object is created as if by calling glCreateShader (OpenGL ES 2.0 §2.10.1, man page),
+--   attached to a Program as if by calling glAttachShader (OpenGL ES 2.0 §2.10.3, man page)
+--   and destroyed as if by calling glDeleteShader (OpenGL ES 2.0 §2.10.1, man page).
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.8
+newtype WebGLShader = WebGLShader JSVal
+instance IsJSVal WebGLShader
 
-data Texture_
-type Texture = JSRef Texture_
+-- | The WebGLTexture interface represents an OpenGL Texture Object.
+--   The underlying object is created as if by calling glGenTextures (OpenGL ES 2.0 §3.7.13, man page),
+--   bound as if by calling glBindTexture (OpenGL ES 2.0 §3.7.13, man page)
+--   and destroyed as if by calling glDeleteTextures (OpenGL ES 2.0 §3.7.13, man page).
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.9
+newtype WebGLTexture = WebGLTexture JSVal
+instance IsJSVal WebGLTexture
 
-data TexImageSource_
-type TexImageSource = JSRef TexImageSource_
+-- | The WebGLUniformLocation interface represents the location of a uniform variable in a shader program.
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.10
+newtype WebGLUniformLocation = WebGLUniformLocation JSVal
+instance IsJSVal WebGLUniformLocation
 
-data UniformLocation_
-type UniformLocation = JSRef UniformLocation_
-
-data ActiveInfo_
--- |interface WebGLActiveInfo {
---    readonly attribute GLint size;
---    readonly attribute GLenum type;
---    readonly attribute DOMString name;
--- };
-type ActiveInfo = JSRef ActiveInfo_
+-- | The WebGLActiveInfo interface represents the information returned from the getActiveAttrib and getActiveUniform calls.
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.11
+newtype WebGLActiveInfo = WebGLActiveInfo JSVal
+instance IsJSVal WebGLActiveInfo
+-- | readonly attribute GLint size: The size of the requested variable.
 foreign import javascript unsafe "$r = $1.size"
-    aiSize :: ActiveInfo -> IO GLint
+    aiSize :: WebGLActiveInfo -> GLint
+-- | readonly attribute GLenum type: The data type of the requested variable.
 foreign import javascript unsafe "$r = $1.type"
-    aiType :: ActiveInfo -> IO GLenum
+    aiType :: WebGLActiveInfo -> GLenum
+-- | readonly attribute DOMString name: The name of the requested variable.
 foreign import javascript unsafe "$r = $1.name"
-    aiName :: ActiveInfo -> IO JSString
+    aiName :: WebGLActiveInfo -> JSString
+
+-- | The WebGLShaderPrecisionFormat interface represents the information returned from the getShaderPrecisionFormat call.
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.12
+newtype WebGLShaderPrecisionFormat = WebGLShaderPrecisionFormat JSVal
+instance IsJSVal WebGLShaderPrecisionFormat
+-- | readonly attribute GLint rangeMin: The base 2 log of the absolute value of the minimum value that can be represented.
+foreign import javascript unsafe "$r = $1.rangeMin"
+    rangeMin :: WebGLShaderPrecisionFormat -> GLint
+-- | readonly attribute GLint rangeMax: The base 2 log of the absolute value of the maximum value that can be represented.
+foreign import javascript unsafe "$r = $1.rangeMax"
+    rangeMax :: WebGLShaderPrecisionFormat -> GLint
+-- | readonly attribute GLint precision: The number of bits of precision that can be represented. For integer formats this value is always 0.
+foreign import javascript unsafe "$r = $1.precision"
+    precision :: WebGLShaderPrecisionFormat -> GLint
 
 
-data ShaderPrecisionFormat_
-type ShaderPrecisionFormat = JSRef ShaderPrecisionFormat_
-
-
--- | Operations on JS typed arrays
-class TypedArrayValue a where
-    -- | JS TypedArray
-    data TypedArray_ a
-    -- | TypedArray view of an ArrayBuffer
-    typedArrayView :: ArrayBuffer -> IO (TypedArray a)
-    -- | TypedArray view of an ArrayBuffer
-    typedArrayViewS :: ByteArray -> IO (TypedArray a)
-    -- | new TypedArray given the number of elements
-    newTypedArray :: Int -> IO (TypedArray a)
-    -- | set value at index
-    setIdx :: TypedArray a -> Int -> a -> IO ()
-    -- | get value at index
-    getIdx :: TypedArray a -> Int -> IO a
-
--- | JS TypedArray
-type TypedArray a = JSRef (TypedArray_ a)
-
-instance TypedArrayValue GLbyte where
-    data TypedArray_ GLbyte
-    typedArrayView = int8ArrayB_ . unsafeCoerce
-    typedArrayViewS = int8ArrayB_ . unsafeCoerce
-    newTypedArray = int8Array_
-    setIdx = setIdxInt8
-    getIdx = getIdxInt8
-
-instance TypedArrayValue GLubyte where
-    data TypedArray_ GLubyte
-    typedArrayView = uint8ArrayB_ . unsafeCoerce
-    typedArrayViewS = uint8ArrayB_ . unsafeCoerce
-    newTypedArray = uint8Array_
-    setIdx = setIdxUint8
-    getIdx = getIdxUint8
-
-instance TypedArrayValue GLshort where
-    data TypedArray_ GLshort
-    typedArrayView = int16ArrayB_ . unsafeCoerce
-    typedArrayViewS = int16ArrayB_ . unsafeCoerce
-    newTypedArray = int16Array_
-    setIdx = setIdxInt16
-    getIdx = getIdxInt16
-
-instance TypedArrayValue GLushort where
-    data TypedArray_ GLushort
-    typedArrayView = uint16ArrayB_ . unsafeCoerce
-    typedArrayViewS = uint16ArrayB_ . unsafeCoerce
-    newTypedArray = uint16Array_
-    setIdx = setIdxUint16
-    getIdx  = getIdxUint16
-
-instance TypedArrayValue GLint where
-    data TypedArray_ GLint
-    typedArrayView = int32ArrayB_ . unsafeCoerce
-    typedArrayViewS = int32ArrayB_ . unsafeCoerce
-    newTypedArray = int32Array_
-    setIdx = setIdxInt32
-    getIdx = getIdxInt32
-
-instance TypedArrayValue GLuint where
-    data TypedArray_ GLuint
-    typedArrayView = uint32ArrayB_ . unsafeCoerce
-    typedArrayViewS = uint32ArrayB_ . unsafeCoerce
-    newTypedArray = uint32Array_
-    setIdx = setIdxUint32
-    getIdx = getIdxUint32
-
-instance TypedArrayValue GLfloat where
-    data TypedArray_ GLfloat
-    typedArrayView = float32ArrayB_ . unsafeCoerce
-    typedArrayViewS = float32ArrayB_ . unsafeCoerce
-    newTypedArray = float32Array_
-    setIdx = setIdxFloat32
-    getIdx = getIdxFloat32
-
-instance TypedArrayValue GLdouble where
-    data TypedArray_ GLdouble
-    typedArrayView = float64ArrayB_ . unsafeCoerce
-    typedArrayViewS = float64ArrayB_ . unsafeCoerce
-    newTypedArray = float64Array_
-    setIdx = setIdxFloat64
-    getIdx = getIdxFloat64
-
--- | Put values from Foldable to TypedArray.
---   Array size is not checked and must be consistent
-fillTypedArray :: (FL.Foldable t, TypedArrayValue a) => TypedArray a -> t a -> IO ()
-fillTypedArray arr xs = M.void (FL.foldlM f (arr,0) xs) -- >> (logthis . unsafeCoerce $ arr)
-    where f (ptr,i) value = setIdx ptr i value >> return (ptr,i+1)
-
-
-foreign import javascript unsafe "$r = new Int8Array($1)"
-    int8Array_ :: Int -> IO (TypedArray GLbyte)
-foreign import javascript unsafe "$r = new Uint8Array($1)"
-    uint8Array_ :: Int -> IO (TypedArray GLubyte)
-foreign import javascript unsafe "$r = new Int16Array($1)"
-    int16Array_ :: Int -> IO (TypedArray GLshort)
-foreign import javascript unsafe "$r = new Uint16Array($1)"
-    uint16Array_ :: Int -> IO (TypedArray GLushort)
-foreign import javascript unsafe "$r = new Int32Array($1)"
-    int32Array_ :: Int -> IO (TypedArray GLint)
-foreign import javascript unsafe "$r = new Uint32Array($1)"
-    uint32Array_ :: Int -> IO (TypedArray GLuint)
-foreign import javascript unsafe "$r = new Float32Array($1)"
-    float32Array_ :: Int -> IO (TypedArray GLfloat)
-foreign import javascript unsafe "$r = new Float64Array($1)"
-    float64Array_ :: Int -> IO (TypedArray GLdouble)
-
-foreign import javascript unsafe "$r = new Int8Array($1.buf)"
-    int8ArrayB_ :: JSRef a -> IO (TypedArray GLbyte)
-foreign import javascript unsafe "$r = new Uint8Array($1.buf)"
-    uint8ArrayB_ :: JSRef a -> IO (TypedArray GLubyte)
-foreign import javascript unsafe "$r = new Int16Array($1.buf)"
-    int16ArrayB_ :: JSRef a -> IO (TypedArray GLshort)
-foreign import javascript unsafe "$r = new Uint16Array($1.buf)"
-    uint16ArrayB_ :: JSRef a -> IO (TypedArray GLushort)
-foreign import javascript unsafe "$r = new Int32Array($1.buf)"
-    int32ArrayB_ :: JSRef a -> IO (TypedArray GLint)
-foreign import javascript unsafe "$r = new Uint32Array($1.buf)"
-    uint32ArrayB_ :: JSRef a -> IO (TypedArray GLuint)
-foreign import javascript unsafe "$r = new Float32Array($1.buf)"
-    float32ArrayB_ :: JSRef a -> IO (TypedArray GLfloat)
-foreign import javascript unsafe "$r = new Float64Array($1.buf)"
-    float64ArrayB_ :: JSRef a -> IO (TypedArray GLdouble)
-
-foreign import javascript unsafe "$1[$2] = $3"
-    setIdxInt8 :: TypedArray GLbyte -> Int -> GLbyte -> IO ()
-foreign import javascript unsafe "$1[$2] = $3"
-    setIdxUint8 :: TypedArray GLubyte -> Int -> GLubyte -> IO ()
-foreign import javascript unsafe "$1[$2] = $3"
-    setIdxInt16 :: TypedArray GLshort -> Int -> GLshort -> IO ()
-foreign import javascript unsafe "$1[$2] = $3"
-    setIdxUint16 :: TypedArray GLushort -> Int -> GLushort -> IO ()
-foreign import javascript unsafe "$1[$2] = $3"
-    setIdxInt32 :: TypedArray GLint -> Int -> GLint -> IO ()
-foreign import javascript unsafe "$1[$2] = $3"
-    setIdxUint32 ::TypedArray GLuint -> Int -> GLuint -> IO ()
-foreign import javascript unsafe "$1[$2] = $3"
-    setIdxFloat32 :: TypedArray GLfloat -> Int -> GLfloat -> IO ()
-foreign import javascript unsafe "$1[$2] = $3"
-    setIdxFloat64 :: TypedArray GLdouble -> Int -> GLdouble -> IO ()
-
-foreign import javascript unsafe "$r = $1[$2]"
-    getIdxInt8 :: TypedArray GLbyte -> Int -> IO GLbyte
-foreign import javascript unsafe "$r = $1[$2]"
-    getIdxUint8 :: TypedArray GLubyte -> Int -> IO GLubyte
-foreign import javascript unsafe "$r = $1[$2]"
-    getIdxInt16 :: TypedArray GLshort -> Int -> IO GLshort
-foreign import javascript unsafe "$r = $1[$2]"
-    getIdxUint16 :: TypedArray GLushort -> Int -> IO GLushort
-foreign import javascript unsafe "$r = $1[$2]"
-    getIdxInt32 :: TypedArray GLint -> Int -> IO GLint
-foreign import javascript unsafe "$r = $1[$2]"
-    getIdxUint32 ::TypedArray GLuint -> Int -> IO GLuint
-foreign import javascript unsafe "$r = $1[$2]"
-    getIdxFloat32 :: TypedArray GLfloat -> Int -> IO GLfloat
-foreign import javascript unsafe "$r = $1[$2]"
-    getIdxFloat64 :: TypedArray GLdouble -> Int -> IO GLdouble
-
-
---foreign import javascript unsafe "console.log($1)"
---    logthis :: JSRef a -> IO ()
-
--- | Get Javascript WebGL Context from html canvas element
-foreign import javascript unsafe "$r = ($1.getContext(\"webgl\")) ? $1.getContext(\"webgl\") : $1.getContext(\"experimental-webgl\")"
-    getCtx :: JSRef a -> IO Ctx
-
-foreign import javascript unsafe "$r = $1.buffer"
-    getBuffer' :: TypedArray a -> IO (JSRef a)
-
--- | Get underlying ArrayBuffer from Typed Array
-getBuffer :: TypedArray a -> IO ArrayBuffer
-getBuffer arr = getBuffer' arr >>= wrapMutableBuffer 0 0
-
-
--- | Copy list into newly created ArrayBuffer
-newArrayBuffer :: (Prim a) => [a] -> IO ArrayBuffer
-newArrayBuffer xs = do
-    buf <- newByteArray (n*m)
-    mapM_ (\(v,i) -> writeByteArray buf i v) (zip xs [0..])
-    return buf
-    where n = length xs
-          m = sizeOf . head $ xs
-
--- | Allocate memory in bytes for ArrayBuffer
-mallocArrayBuffer :: Int -> IO ArrayBuffer
-mallocArrayBuffer = newByteArray
+-- | typedef (ImageData or HTMLImageElement or HTMLCanvasElement or HTMLVideoElement) TexImageSource;
+--   https://www.khronos.org/registry/webgl/specs/1.0.3/#6.7
+newtype TexImageSource = TexImageSource JSVal
+instance IsJSVal TexImageSource

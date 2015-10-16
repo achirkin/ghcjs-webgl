@@ -1,3 +1,4 @@
+{-# LANGUAGE PolyKinds #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  GHCJS.WebGL.Raw
@@ -7,576 +8,573 @@
 -- Maintainer  :  Artem M. Chirkin <chirkin@arch.ethz.ch>
 -- Stability   :  Experimental
 --
--- Functions in WebGL 1.0 spec.
--- https://www.khronos.org/registry/webgl/specs/1.0/
+-- Functions in WebGL 1.0.3 spec.
+-- https://www.khronos.org/registry/webgl/specs/1.0.3/
 --
 -----------------------------------------------------------------------------
 
 module GHCJS.WebGL.Raw where
 
-import Data.Int ()
 
 import GHCJS.Types
 
 import GHCJS.WebGL.Types
 
-import Data.Primitive.ByteArray (ByteArray)
-import Unsafe.Coerce (unsafeCoerce)
+import Data.TypedArray
+--import JavaScript.TypedArray
+--import JavaScript.TypedArray.ArrayBuffer
+import JavaScript.Web.Canvas
 
+--import Unsafe.Coerce (unsafeCoerce)
 
 foreign import javascript unsafe "$1.activeTexture($2)"
-    activeTexture :: Ctx -> GLenum -> IO ()
+    activeTexture :: WebGLRenderingContext -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.attachShader($2, $3)"
-    attachShader :: Ctx -> Program -> Shader -> IO ()
+    attachShader :: WebGLRenderingContext -> WebGLProgram -> WebGLShader -> IO ()
 
 foreign import javascript unsafe "$1.bindAttribLocation($2, $3, $4)"
-    bindAttribLocation :: Ctx -> Program -> GLuint -> JSString -> IO ()
+    bindAttribLocation :: WebGLRenderingContext -> WebGLProgram -> GLuint -> JSString -> IO ()
 
 foreign import javascript unsafe "$1.bindBuffer($2, $3)"
-    bindBuffer :: Ctx -> GLenum -> Buffer -> IO ()
+    bindBuffer :: WebGLRenderingContext -> GLenum -> WebGLBuffer -> IO ()
 
 foreign import javascript unsafe "$1.bindFramebuffer($2, $3)"
-    bindFramebuffer :: Ctx -> GLenum -> FrameBuffer -> IO ()
+    bindFramebuffer :: WebGLRenderingContext -> GLenum -> WebGLFramebuffer -> IO ()
 
 foreign import javascript unsafe "$1.bindRenderbuffer($2, $3)"
-    bindRenderbuffer :: Ctx -> GLenum -> RenderBuffer -> IO ()
+    bindRenderbuffer :: WebGLRenderingContext -> GLenum -> WebGLRenderbuffer -> IO ()
 
 foreign import javascript unsafe "$1.bindTexture($2, $3)"
-    bindTexture :: Ctx -> GLenum -> Texture -> IO ()
+    bindTexture :: WebGLRenderingContext -> GLenum -> WebGLTexture -> IO ()
 
 foreign import javascript unsafe "$1.blendColor($2, $3, $4, $5)"
-    blendColor :: Ctx -> GLclampf -> GLclampf -> GLclampf -> GLclampf -> IO ()
+    blendColor :: WebGLRenderingContext -> GLclampf -> GLclampf -> GLclampf -> GLclampf -> IO ()
 
 foreign import javascript unsafe "$1.blendEquation($2)"
-    blendEquation :: Ctx -> GLenum -> IO ()
+    blendEquation :: WebGLRenderingContext -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.blendEquationSeparate($2, $3)"
-    blendEquationSeparate :: Ctx -> GLenum -> GLenum -> IO ()
+    blendEquationSeparate :: WebGLRenderingContext -> GLenum -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.blendFunc($2, $3)"
-    blendFunc :: Ctx -> GLenum -> GLenum -> IO ()
+    blendFunc :: WebGLRenderingContext -> GLenum -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.blendFuncSeparate($2, $3, $4, $5)"
-    blendFuncSeparate :: Ctx -> GLenum -> GLenum -> GLenum -> GLenum -> IO ()
+    blendFuncSeparate :: WebGLRenderingContext -> GLenum -> GLenum -> GLenum -> GLenum -> IO ()
 
 {-
-foreign import javascript unsafe "$1.bufferData($2, $3, $4)"
-    bufferData :: Ctx -> GLenum -> GLsizeiptr -> GLenum -> IO ()
+foreign import javascript unsafe "$1ferData($2, $3, $4)"
+    bufferData :: WebGLRenderingContext -> GLenum -> GLsizeiptr -> GLenum -> IO ()
 -}
 
 --foreign import javascript unsafe "$1.bufferData($2, $3, $4)"
---    bufferData :: Ctx -> GLenum -> ArrayBufferView -> GLenum -> IO ()
+--    bufferData :: WebGLRenderingContext -> GLenum -> ArrayBufferView -> GLenum -> IO ()
 
 
-foreign import javascript unsafe "$1.bufferData($2, $3.buf, $4)"
-    bufferData' :: Ctx -> GLenum -> JSRef ArrayBuffer -> GLenum -> IO ()
+foreign import javascript unsafe "$1.bufferData($2, $3, $4)"
+    bufferData :: WebGLRenderingContext -> GLenum -> SomeArrayBuffer m -> GLenum -> IO ()
 
-bufferData :: Ctx -> GLenum -> ArrayBuffer -> GLenum -> IO ()
-bufferData gl t buf dr = bufferData' gl t (unsafeCoerce buf) dr
+--bufferData :: WebGLRenderingContext -> GLenum -> ArrayBuffer -> GLenum -> IO ()
+--bufferData gl t buf dr = bufferData' gl t (unsafeCoerce buf) dr
 
-foreign import javascript unsafe "$1.bufferData($2, $3.buf, $4)"
-    bufferDataS' :: Ctx -> GLenum -> JSRef ByteArray -> GLenum -> IO ()
-
-bufferDataS :: Ctx -> GLenum -> ByteArray -> GLenum -> IO ()
-bufferDataS gl t buf dr = bufferDataS' gl t (unsafeCoerce buf) dr
+--foreign import javascript unsafe "$1.bufferData($2, $3, $4)"
+--    bufferDataS' :: WebGLRenderingContext -> GLenum -> JSVal ByteArray -> GLenum -> IO ()
+--
+--bufferDataS :: WebGLRenderingContext -> GLenum -> ByteArray -> GLenum -> IO ()
+--bufferDataS gl t buf dr = bufferDataS' gl t (unsafeCoerce buf) dr
 
 {-
 foreign import javascript unsafe "$1.bufferData($2, $3, $4)"
-    bufferData :: Ctx -> GLenum -> ArrayBuffer -> GLenum -> IO ()
+    bufferData :: WebGLRenderingContext -> GLenum -> ArrayBuffer -> GLenum -> IO ()
 -}
 
-foreign import javascript unsafe "$1.bufferSubData($2, $3, $4.buf)"
-    bufferSubData' :: Ctx -> GLenum -> GLintptr -> JSRef ArrayBuffer -> IO ()
+foreign import javascript unsafe "$1.bufferSubData($2, $3, $4)"
+    bufferSubData :: WebGLRenderingContext -> GLenum -> GLintptr -> SomeArrayBuffer m -> IO ()
 
-bufferSubData :: Ctx -> GLenum -> GLintptr -> ArrayBuffer -> IO ()
-bufferSubData a b c = bufferSubData' a b c . unsafeCoerce
+--bufferSubData :: WebGLRenderingContext -> GLenum -> GLintptr -> ArrayBuffer -> IO ()
+--bufferSubData a b c = bufferSubData' a b c . unsafeCoerce
 
 
-foreign import javascript unsafe "$1.bufferSubData($2, $3, $4.buf)"
-    bufferSubDataS' :: Ctx -> GLenum -> GLintptr -> JSRef ByteArray -> IO ()
-
-bufferSubDataS :: Ctx -> GLenum -> GLintptr -> ByteArray -> IO ()
-bufferSubDataS a b c = bufferSubData' a b c . unsafeCoerce
+--foreign import javascript unsafe "$1.bufferSubData($2, $3, $4.buf)"
+--    bufferSubDataS' :: WebGLRenderingContext -> GLenum -> GLintptr -> JSVal ByteArray -> IO ()
+--
+--bufferSubDataS :: WebGLRenderingContext -> GLenum -> GLintptr -> ByteArray -> IO ()
+--bufferSubDataS a b c = bufferSubData' a b c . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.bufferSubData($2, $3, $4)"
-    bufferSubData :: Ctx -> GLenum -> GLenum -> ArrayBuffer -> IO ()
+    bufferSubData :: WebGLRenderingContext -> GLenum -> GLenum -> ArrayBuffer -> IO ()
 -}
 
 foreign import javascript unsafe "$1.checkFramebufferStatus($2)"
-    checkFramebufferStatus :: Ctx -> GLenum -> IO GLenum
+    checkFramebufferStatus :: WebGLRenderingContext -> GLenum -> IO GLenum
 
 foreign import javascript unsafe "$1.clear($2)"
-    clear :: Ctx -> GLbitfield -> IO ()
+    clear :: WebGLRenderingContext -> GLbitfield -> IO ()
 
 foreign import javascript unsafe "$1.clearColor($2, $3, $4, $5)"
-    clearColor :: Ctx -> GLclampf -> GLclampf -> GLclampf -> GLclampf -> IO ()
+    clearColor :: WebGLRenderingContext -> GLclampf -> GLclampf -> GLclampf -> GLclampf -> IO ()
 
 foreign import javascript unsafe "$1.clearDepth($2)"
-    clearDepth :: Ctx -> GLclampf -> IO ()
+    clearDepth :: WebGLRenderingContext -> GLclampf -> IO ()
 
 foreign import javascript unsafe "$1.clearStencil($2)"
-    clearStencil :: Ctx -> GLint-> IO ()
+    clearStencil :: WebGLRenderingContext -> GLint-> IO ()
 
 foreign import javascript unsafe "$1.colorMask($2, $3, $4, $5)"
-    colorMask :: Ctx -> GLboolean -> GLboolean -> GLboolean -> GLboolean -> IO ()
+    colorMask :: WebGLRenderingContext -> GLboolean -> GLboolean -> GLboolean -> GLboolean -> IO ()
 --foreign import javascript unsafe "$1.colorMask($2, $3, $4, $5)"
---    colorMask :: Ctx -> Bool -> Bool -> Bool -> Bool -> IO ()
+--    colorMask :: WebGLRenderingContext -> Bool -> Bool -> Bool -> Bool -> IO ()
 
 foreign import javascript unsafe "$1.compileShader($2)"
-    compileShader :: Ctx -> Shader -> IO ()
+    compileShader :: WebGLRenderingContext -> WebGLShader -> IO ()
 
 foreign import javascript unsafe "$1.compressedTexImage2D($2, $3, $4, $5, $6, $7, $8)"
-    compressedTexImage2D' :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> TypedArray a -> IO ()
+    compressedTexImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> SomeTypedArray m a -> IO ()
 
---compressedTexImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> ArrayBuffer -> IO ()
---compressedTexImage2D q w e r t y u = compressedTexImage2D' q w e r t y u . unsafeCoerce
 
 foreign import javascript unsafe "$1.compressedTexSubImage2D($2, $3, $4, $5, $6, $7, $8, $9)"
-    compressedTexSubImage2D' :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> TypedArray a -> IO ()
+    compressedTexSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> SomeTypedArray m a -> IO ()
 
---compressedTexSubImage2D :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> ArrayBuffer -> IO ()
---compressedTexSubImage2D q w e r t y u i = compressedTexSubImage2D' q w e r t y u i . unsafeCoerce
 
 foreign import javascript unsafe "$1.copyTexImage2D($2, $3, $4, $5, $6, $7, $8, $9)"
-    copyTexImage2D :: Ctx -> GLenum -> GLint -> GLenum -> GLint -> GLint -> GLsizei -> GLsizei-> GLint-> IO ()
+    copyTexImage2D :: WebGLRenderingContext -> GLenum -> GLint -> GLenum -> GLint -> GLint -> GLsizei -> GLsizei-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.copyTexSubImage2D($2, $3, $4, $5, $6, $7, $8, $9)"
-    copyTexSubImage2D :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> IO ()
+    copyTexSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> IO ()
 
 foreign import javascript unsafe "$1.createBuffer()"
-    createBuffer :: Ctx -> IO Buffer
+    createBuffer :: WebGLRenderingContext -> IO WebGLBuffer
 
 foreign import javascript unsafe "$1.createFramebuffer()"
-    createFramebuffer :: Ctx -> IO FrameBuffer
+    createFramebuffer :: WebGLRenderingContext -> IO WebGLFramebuffer
 
 foreign import javascript unsafe "$1.createProgram()"
-    createProgram :: Ctx -> IO Program
+    createProgram :: WebGLRenderingContext -> IO WebGLProgram
 
 foreign import javascript unsafe "$1.createRenderbuffer()"
-    createRenderbuffer :: Ctx -> IO RenderBuffer
+    createRenderbuffer :: WebGLRenderingContext -> IO WebGLRenderbuffer
 
 foreign import javascript unsafe "$1.createShader($2)"
-    createShader :: Ctx -> GLenum -> IO Shader
+    createShader :: WebGLRenderingContext -> GLenum -> IO WebGLShader
 
 foreign import javascript unsafe "$1.createTexture()"
-    createTexture :: Ctx -> IO Texture
+    createTexture :: WebGLRenderingContext -> IO WebGLTexture
 
 foreign import javascript unsafe "$1.cullFace($2)"
-    cullFace :: Ctx -> GLenum -> IO ()
+    cullFace :: WebGLRenderingContext -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.deleteBuffer($2)"
-    deleteBuffer :: Ctx -> Buffer -> IO ()
+    deleteBuffer :: WebGLRenderingContext -> WebGLBuffer -> IO ()
 
 foreign import javascript unsafe "$1.deleteFramebuffer($2)"
-    deleteFramebuffer :: Ctx -> FrameBuffer -> IO ()
+    deleteFramebuffer :: WebGLRenderingContext -> WebGLFramebuffer -> IO ()
 
 foreign import javascript unsafe "$1.deleteProgram($2)"
-    deleteProgram :: Ctx -> Program -> IO ()
+    deleteProgram :: WebGLRenderingContext -> WebGLProgram -> IO ()
 
 foreign import javascript unsafe "$1.deleteRenderbuffer($2)"
-    deleteRenderbuffer :: Ctx -> RenderBuffer -> IO ()
+    deleteRenderbuffer :: WebGLRenderingContext -> WebGLRenderbuffer -> IO ()
 
 foreign import javascript unsafe "$1.deleteShader($2)"
-    deleteShader :: Ctx -> Shader -> IO ()
+    deleteShader :: WebGLRenderingContext -> WebGLShader -> IO ()
 
 foreign import javascript unsafe "$1.deleteTexture($2)"
-    deleteTexture :: Ctx -> Texture -> IO ()
+    deleteTexture :: WebGLRenderingContext -> WebGLTexture -> IO ()
 
 foreign import javascript unsafe "$1.depthFunc($2)"
-    depthFunc :: Ctx -> GLenum -> IO ()
+    depthFunc :: WebGLRenderingContext -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.depthMask($2)"
-    depthMask :: Ctx -> GLboolean -> IO ()
+    depthMask :: WebGLRenderingContext -> GLboolean -> IO ()
 
 foreign import javascript unsafe "$1.depthRange($2, $3)"
-    depthRange :: Ctx -> GLclampf -> GLclampf -> IO ()
+    depthRange :: WebGLRenderingContext -> GLclampf -> GLclampf -> IO ()
 
 foreign import javascript unsafe "$1.detachShader($2, $3)"
-    detachShader :: Ctx -> Program -> Shader -> IO ()
+    detachShader :: WebGLRenderingContext -> WebGLProgram -> WebGLShader -> IO ()
 
 foreign import javascript unsafe "$1.disable($2)"
-    disable :: Ctx -> GLenum -> IO ()
+    disable :: WebGLRenderingContext -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.disableVertexAttribArray($2)"
-    disableVertexAttribArray :: Ctx -> GLuint -> IO ()
+    disableVertexAttribArray :: WebGLRenderingContext -> GLuint -> IO ()
 
 foreign import javascript unsafe "$1.drawArrays($2, $3, $4)"
-    drawArrays :: Ctx -> GLenum -> GLint -> GLsizei -> IO ()
+    drawArrays :: WebGLRenderingContext -> GLenum -> GLint -> GLsizei -> IO ()
 
 foreign import javascript unsafe "$1.drawElements($2, $3, $4, $5)"
-    drawElements :: Ctx -> GLenum -> GLsizei -> GLenum -> GLintptr -> IO ()
+    drawElements :: WebGLRenderingContext -> GLenum -> GLsizei -> GLenum -> GLintptr -> IO ()
 
 foreign import javascript unsafe "$1.enable($2)"
-    enable :: Ctx -> GLenum -> IO ()
+    enable :: WebGLRenderingContext -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.enableVertexAttribArray($2)"
-    enableVertexAttribArray :: Ctx -> GLuint -> IO ()
+    enableVertexAttribArray :: WebGLRenderingContext -> GLuint -> IO ()
 
 foreign import javascript unsafe "$1.finish()"
-    finish :: Ctx -> IO ()
+    finish :: WebGLRenderingContext -> IO ()
 
 foreign import javascript unsafe "$1.flush()"
-    flush :: Ctx -> IO ()
+    flush :: WebGLRenderingContext -> IO ()
 
 foreign import javascript unsafe "$1.framebufferRenderbuffer($2, $3, $4, $5)"
-    framebufferRenderbuffer :: Ctx -> GLenum -> GLenum -> GLenum -> RenderBuffer -> IO ()
+    framebufferRenderbuffer :: WebGLRenderingContext -> GLenum -> GLenum -> GLenum -> WebGLRenderbuffer -> IO ()
 
 foreign import javascript unsafe "$1.framebufferTexture2D($2, $3, $4, $5, $6)"
-    framebufferTexture2D :: Ctx -> GLenum -> GLenum -> GLenum -> Texture -> GLint-> IO ()
+    framebufferTexture2D :: WebGLRenderingContext -> GLenum -> GLenum -> GLenum -> WebGLTexture -> GLint-> IO ()
 
 foreign import javascript unsafe "$1.frontFace($2)"
-    frontFace :: Ctx -> GLenum -> IO ()
+    frontFace :: WebGLRenderingContext -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.generateMipmap($2)"
-    generateMipmap :: Ctx -> GLenum -> IO ()
+    generateMipmap :: WebGLRenderingContext -> GLenum -> IO ()
 
---WebGLActiveInfo? getActiveAttrib(WebGLProgram? program, GLuint index)
+--WebGLActiveInfo? getActiveAttrib(WebGLProgram? WebGLProgram, GLuint index)
 foreign import javascript unsafe "$1.getActiveAttrib($2, $3)"
-    getActiveAttrib :: Ctx -> Program -> GLuint -> IO ActiveInfo
+    getActiveAttrib :: WebGLRenderingContext -> WebGLProgram -> GLuint -> IO WebGLActiveInfo
 
 foreign import javascript unsafe "$1.getActiveUniform($2, $3)"
-    getActiveUniform :: Ctx -> Program -> GLuint -> IO ActiveInfo
+    getActiveUniform :: WebGLRenderingContext -> WebGLProgram -> GLuint -> IO WebGLActiveInfo
 
 {-
 foreign import javascript unsafe "$1.getAttachedShaders($2)"
-    getAttachedShaders :: Ctx -> Program -> IO (Sequence Shader)
+    getAttachedShaders :: WebGLRenderingContext -> WebGLProgram -> IO (Sequence WebGLShader)
 -}
 
 foreign import javascript unsafe "$1.getAttribLocation($2, $3)"
-    getAttribLocation :: Ctx -> Program -> JSString -> IO GLint
+    getAttribLocation :: WebGLRenderingContext -> WebGLProgram -> JSString -> IO GLint
 
 foreign import javascript unsafe "$1.getBufferParameter($2, $3)"
-    getBufferParameter :: Ctx -> GLenum -> GLenum -> IO (JSRef a)
+    getBufferParameter :: WebGLRenderingContext -> GLenum -> GLenum -> IO JSVal
 
 foreign import javascript unsafe "$1.getParameter($2)"
-    getParameter :: Ctx -> GLenum -> IO (JSRef a)
+    getParameter :: WebGLRenderingContext -> GLenum -> IO JSVal
 
 foreign import javascript unsafe "$1.getError()"
-    getError :: Ctx -> IO GLenum
+    getError :: WebGLRenderingContext -> IO GLenum
 
 foreign import javascript unsafe "$1.getFramebufferAttachmentParameter($2, $3)"
-    getFramebufferAttachmentParameter :: Ctx -> GLenum -> GLenum -> IO GLenum
+    getFramebufferAttachmentParameter :: WebGLRenderingContext -> GLenum -> GLenum -> IO GLenum
 
---any getProgramParameter(WebGLProgram? program, GLenum pname)
+--any getProgramParameter(WebGLProgram? WebGLProgram, GLenum pname)
 foreign import javascript unsafe "$1.getProgramParameter($2, $3)"
-    getProgramParameter :: Ctx -> Program -> GLenum -> IO (JSRef a)
+    getProgramParameter :: WebGLRenderingContext -> WebGLProgram -> GLenum -> IO JSVal
 
 foreign import javascript unsafe "$1.getProgramInfoLog($2)"
-    getProgramInfoLog :: Ctx -> Program -> IO JSString
+    getProgramInfoLog :: WebGLRenderingContext -> WebGLProgram -> IO JSString
 
 foreign import javascript unsafe "$1.getRenderbufferParameter($2, $3)"
-    getRenderbufferParameter :: Ctx -> GLenum -> GLenum -> IO (JSRef a)
+    getRenderbufferParameter :: WebGLRenderingContext -> GLenum -> GLenum -> IO JSVal
 
 foreign import javascript unsafe "$1.getShaderParameter($2, $3)"
-    getShaderParameter :: Ctx -> Shader -> GLenum -> IO (JSRef a)
+    getShaderParameter :: WebGLRenderingContext -> WebGLShader -> GLenum -> IO JSVal
 
 foreign import javascript unsafe "$1.getShaderPrecisionFormat($2, $3)"
-    getShaderPrecisionFormat :: Ctx -> GLenum -> GLenum -> IO ShaderPrecisionFormat
+    getShaderPrecisionFormat :: WebGLRenderingContext -> GLenum -> GLenum -> IO WebGLShaderPrecisionFormat
 
 foreign import javascript unsafe "$1.getShaderInfoLog($2)"
-    getShaderInfoLog :: Ctx -> Shader -> IO JSString
+    getShaderInfoLog :: WebGLRenderingContext -> WebGLShader -> IO JSString
 
 foreign import javascript unsafe "$1.getShaderSource($2)"
-    getShaderSource :: Ctx -> Shader -> IO JSString
+    getShaderSource :: WebGLRenderingContext -> WebGLShader -> IO JSString
 
 foreign import javascript unsafe "$1.getTexParameter($2, $3)"
-    getTexParameter :: Ctx -> GLenum -> GLenum -> IO (JSRef a)
+    getTexParameter :: WebGLRenderingContext -> GLenum -> GLenum -> IO JSVal
 
 foreign import javascript unsafe "$1.getUniform($2, $3)"
-    getUniform :: Ctx -> Program -> UniformLocation -> IO (JSRef a)
+    getUniform :: WebGLRenderingContext -> WebGLProgram -> WebGLUniformLocation -> IO JSVal
 
 foreign import javascript unsafe "$1.getUniformLocation($2, $3)"
-    getUniformLocation :: Ctx -> Program -> JSString -> IO UniformLocation
+    getUniformLocation :: WebGLRenderingContext -> WebGLProgram -> JSString -> IO WebGLUniformLocation
 
 foreign import javascript unsafe "$1.getVertexAttrib($2, $3)"
-    getVertexAttrib :: Ctx -> GLuint -> GLenum -> IO (JSRef a)
+    getVertexAttrib :: WebGLRenderingContext -> GLuint -> GLenum -> IO JSVal
 
 foreign import javascript unsafe "$1.getVertexAttribOffset($2, $3)"
-    getVertexAttribOffset :: Ctx -> GLuint -> GLenum -> IO GLsizeiptr --GLsizeiptr
+    getVertexAttribOffset :: WebGLRenderingContext -> GLuint -> GLenum -> IO GLsizeiptr --GLsizeiptr
 
 foreign import javascript unsafe "$1.hint($2, $3)"
-    hint :: Ctx -> GLenum -> GLenum -> IO ()
+    hint :: WebGLRenderingContext -> GLenum -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.isBuffer($2)"
-    isBuffer :: Ctx -> Buffer -> IO GLboolean
+    isBuffer :: WebGLRenderingContext -> WebGLBuffer -> IO GLboolean
 
 foreign import javascript unsafe "$1.isEnabled($2)"
-    isEnabled :: Ctx -> GLenum -> IO GLboolean
+    isEnabled :: WebGLRenderingContext -> GLenum -> IO GLboolean
 
 foreign import javascript unsafe "$1.isFramebuffer($2)"
-    isFramebuffer :: Ctx -> FrameBuffer -> IO GLboolean
+    isFramebuffer :: WebGLRenderingContext -> WebGLFramebuffer -> IO GLboolean
 
 foreign import javascript unsafe "$1.isProgram($2)"
-    isProgram :: Ctx -> Program -> IO GLboolean
+    isProgram :: WebGLRenderingContext -> WebGLProgram -> IO GLboolean
 
 foreign import javascript unsafe "$1.isRenderbuffer($2)"
-    isRenderbuffer :: Ctx -> RenderBuffer -> IO GLboolean
+    isRenderbuffer :: WebGLRenderingContext -> WebGLRenderbuffer -> IO GLboolean
 
 foreign import javascript unsafe "$1.isShader($2)"
-    isShader :: Ctx -> Shader -> IO GLboolean
+    isShader :: WebGLRenderingContext -> WebGLShader -> IO GLboolean
 
 foreign import javascript unsafe "$1.isTexture($2)"
-    isTexture :: Ctx -> Texture -> IO GLboolean
+    isTexture :: WebGLRenderingContext -> WebGLTexture -> IO GLboolean
 
 foreign import javascript unsafe "$1.lineWidth($2)"
-    lineWidth :: Ctx -> GLfloat -> IO ()
+    lineWidth :: WebGLRenderingContext -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.linkProgram($2)"
-    linkProgram :: Ctx -> Program -> IO ()
+    linkProgram :: WebGLRenderingContext -> WebGLProgram -> IO ()
 
 foreign import javascript unsafe "$1.pixelStorei($2, $3)"
-    pixelStorei :: Ctx -> GLenum -> GLint-> IO ()
+    pixelStorei :: WebGLRenderingContext -> GLenum -> GLint-> IO ()
 
 foreign import javascript unsafe "$1.polygonOffset($2, $3)"
-    polygonOffset :: Ctx -> GLfloat -> GLfloat -> IO ()
+    polygonOffset :: WebGLRenderingContext -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.readPixels($2, $3, $4, $5, $6, $7, $8)"
-    readPixels :: Ctx -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> TypedArray a -> IO ()
-
-
---readPixels :: Ctx -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> ArrayBuffer -> IO ()
---readPixels q w e r t y u = readPixels' q w e r t y u . unsafeCoerce
+    readPixels :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> SomeTypedArray m a -> IO ()
 
 foreign import javascript unsafe "$1.renderbufferStorage($2, $3, $4, $5)"
-    renderbufferStorage :: Ctx -> GLenum -> GLenum -> GLsizei -> GLsizei -> IO ()
+    renderbufferStorage :: WebGLRenderingContext -> GLenum -> GLenum -> GLsizei -> GLsizei -> IO ()
 
 foreign import javascript unsafe "$1.sampleCoverage($2, $3)"
-    sampleCoverage :: Ctx -> GLclampf -> GLboolean -> IO ()
+    sampleCoverage :: WebGLRenderingContext -> GLclampf -> GLboolean -> IO ()
 
 foreign import javascript unsafe "$1.scissor($2, $3, $4, $5)"
-    scissor :: Ctx -> GLint -> GLint -> GLsizei -> GLsizei -> IO ()
+    scissor :: WebGLRenderingContext -> GLint -> GLint -> GLsizei -> GLsizei -> IO ()
 
 foreign import javascript unsafe "$1.shaderSource($2, $3)"
-    shaderSource :: Ctx -> Shader -> JSString -> IO ()
+    shaderSource :: WebGLRenderingContext -> WebGLShader -> JSString -> IO ()
 
 foreign import javascript unsafe "$1.stencilFunc($2, $3, $4)"
-    stencilFunc :: Ctx -> GLenum -> GLint-> GLuint -> IO ()
+    stencilFunc :: WebGLRenderingContext -> GLenum -> GLint-> GLuint -> IO ()
 
 foreign import javascript unsafe "$1.stencilFuncSeparate($2, $3, $4, $5)"
-    stencilFuncSeparate :: Ctx -> GLenum -> GLenum -> GLint-> GLuint -> IO ()
+    stencilFuncSeparate :: WebGLRenderingContext -> GLenum -> GLenum -> GLint-> GLuint -> IO ()
 
 foreign import javascript unsafe "$1.stencilMask($2)"
-    stencilMask :: Ctx -> GLuint -> IO ()
+    stencilMask :: WebGLRenderingContext -> GLuint -> IO ()
 
 foreign import javascript unsafe "$1.stencilMaskSeparate($2, $3)"
-    stencilMaskSeparate :: Ctx -> GLenum -> GLuint -> IO ()
+    stencilMaskSeparate :: WebGLRenderingContext -> GLenum -> GLuint -> IO ()
 
 foreign import javascript unsafe "$1.stencilOp($2, $3, $4)"
-    stencilOp :: Ctx -> GLenum -> GLenum -> GLenum -> IO ()
+    stencilOp :: WebGLRenderingContext -> GLenum -> GLenum -> GLenum -> IO ()
 
 foreign import javascript unsafe "$1.stencilOpSeparate($2, $3, $4, $5)"
-    stencilOpSeparate :: Ctx -> GLenum -> GLenum -> GLenum -> GLenum -> IO ()
+    stencilOpSeparate :: WebGLRenderingContext -> GLenum -> GLenum -> GLenum -> GLenum -> IO ()
 
 -- | void texImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height
 --   , GLint border, GLenum format, GLenum type, ArrayBufferView? pixels)
 foreign import javascript unsafe "$1.texImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
-    texImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> TypedArray a -> IO ()
+    texImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> SomeTypedArray m a -> IO ()
+
 
 -- | void texImage2D(GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, TexImageSource? source)
 foreign import javascript unsafe "$1.texImage2D($2, $3, $4, $5, $6, $7)"
-    texImage2DImg :: Ctx -> GLenum -> GLint-> GLenum -> GLenum -> GLenum -> TexImageSource -> IO ()
+    texImage2DImg :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLenum -> GLenum -> TexImageSource -> IO ()
 
---texImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> ArrayBuffer -> IO ()
---texImage2D q w e r t y u i o = texImage2D' q w e r t y u i o . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.texImage2D()"
-    texImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLenum -> GLenum -> CanvasElement -> Void
+    texImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLenum -> GLenum -> CanvasElement -> Void
 
 foreign import javascript unsafe "$1.texImage2D()"
-    texImage2D :: Ctx -> GLenum -> GLint-> GLenum -> GLenum -> GLenum -> VideoElement -> Void
+    texImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLenum -> GLenum -> VideoElement -> Void
 -}
 
 foreign import javascript unsafe "$1.texParameterf($2, $3, $4)"
-    texParameterf :: Ctx -> GLenum -> GLenum -> GLfloat -> IO ()
+    texParameterf :: WebGLRenderingContext -> GLenum -> GLenum -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.texParameteri($2, $3, $4)"
-    texParameteri :: Ctx -> GLenum -> GLenum -> GLint-> IO ()
+    texParameteri :: WebGLRenderingContext -> GLenum -> GLenum -> GLint-> IO ()
 
 foreign import javascript unsafe "$1.texSubImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
-    texSubImage2D' :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> TypedArray a -> IO ()
+    texSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> SomeTypedArray m a -> IO ()
 
-
---texSubImage2D :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> ArrayBuffer -> IO ()
---texSubImage2D q w e r t y u i o = texSubImage2D' q w e r t y u i o . unsafeCoerce
 {-
 
 foreign import javascript unsafe "$1.texSubImage2D()"
-    texSubImage2D :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLenum -> GLenum -> CanvasElement -> Void
+    texSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLenum -> GLenum -> CanvasElement -> Void
 
 foreign import javascript unsafe "$1.texSubImage2D()"
-    texSubImage2D :: Ctx -> GLenum -> GLint-> GLint-> GLint-> GLenum -> GLenum -> VideoElement -> Void
+    texSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLenum -> GLenum -> VideoElement -> Void
 
 -}
 
 foreign import javascript unsafe "$1.uniform1f($2, $3)"
-    uniform1f :: Ctx -> UniformLocation -> GLfloat -> IO ()
+    uniform1f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform1fv($2, $3)"
-    uniform1fv :: Ctx -> UniformLocation -> TypedArray GLfloat -> IO ()
+    uniform1fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform1fv($2 Sequence GLfloat ->)"
-    uniform1fv :: Ctx -> UniformLocation -> Sequence GLfloat -> IO ()
+    uniform1fv :: WebGLRenderingContext -> WebGLUniformLocation -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniform1i($2, $3)"
-    uniform1i :: Ctx -> UniformLocation -> GLint-> IO ()
+    uniform1i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform1iv($2, $3)"
-    uniform1iv :: Ctx -> UniformLocation -> TypedArray GLint -> IO ()
+    uniform1iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLint -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform1iv($2 Sequence GLint->)"
-    uniform1iv :: Ctx -> UniformLocation -> Sequence GLint-> IO ()
+    uniform1iv :: WebGLRenderingContext -> WebGLUniformLocation -> Sequence GLint-> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniform2f($2, $3, $4)"
-    uniform2f :: Ctx -> UniformLocation -> GLfloat -> GLfloat -> IO ()
+    uniform2f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform2fv($2, $3)"
-    uniform2fv :: Ctx -> UniformLocation -> TypedArray GLfloat -> IO ()
+    uniform2fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform2fv($2 Sequence GLfloat ->)"
-    uniform2fv :: Ctx -> UniformLocation -> Sequence GLfloat -> IO ()
+    uniform2fv :: WebGLRenderingContext -> WebGLUniformLocation -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniform2i($2, $3, $4)"
-    uniform2i :: Ctx -> UniformLocation -> GLint-> GLint-> IO ()
+    uniform2i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform2iv($2, $3)"
-    uniform2iv :: Ctx -> UniformLocation -> TypedArray GLint -> IO ()
+    uniform2iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLint -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform2iv($2 Sequence GLint->)"
-    uniform2iv :: Ctx -> UniformLocation -> Sequence GLint-> IO ()
+    uniform2iv :: WebGLRenderingContext -> WebGLUniformLocation -> Sequence GLint-> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniform3f($2, $3, $4, $5)"
-    uniform3f :: Ctx -> UniformLocation -> GLfloat -> GLfloat -> GLfloat -> IO ()
+    uniform3f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform3fv($2, $3)"
-    uniform3fv :: Ctx -> UniformLocation -> TypedArray GLfloat -> IO ()
+    uniform3fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform3fv($2 Sequence GLfloat ->)"
-    uniform3fv :: Ctx -> UniformLocation -> Sequence GLfloat -> IO ()
+    uniform3fv :: WebGLRenderingContext -> WebGLUniformLocation -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniform3i($2, $3, $4, $5)"
-    uniform3i :: Ctx -> UniformLocation -> GLint-> GLint-> GLint-> IO ()
+    uniform3i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> GLint-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform3iv($2, $3)"
-    uniform3iv :: Ctx -> UniformLocation -> TypedArray GLint -> IO ()
+    uniform3iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLint -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform3iv($2 Sequence GLint->)"
-    uniform3iv :: Ctx -> UniformLocation -> Sequence GLint-> IO ()
+    uniform3iv :: WebGLRenderingContext -> WebGLUniformLocation -> Sequence GLint-> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniform4f($2, $3, $4, $5, $6)"
-    uniform4f :: Ctx -> UniformLocation -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
+    uniform4f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform4fv($2, $3)"
-    uniform4fv :: Ctx -> UniformLocation -> TypedArray GLfloat -> IO ()
+    uniform4fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform4fv($2 Sequence GLfloat ->)"
-    uniform4fv :: Ctx -> UniformLocation -> Sequence GLfloat -> IO ()
+    uniform4fv :: WebGLRenderingContext -> WebGLUniformLocation -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniform4i($2, $3, $4, $5, $6)"
-    uniform4i :: Ctx -> UniformLocation -> GLint-> GLint-> GLint-> GLint-> IO ()
+    uniform4i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> GLint-> GLint-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform4iv($2, $3)"
-    uniform4iv :: Ctx -> UniformLocation -> TypedArray GLint -> IO ()
+    uniform4iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLint -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform4iv($2 Sequence GLint->)"
-    uniform4iv :: Ctx -> UniformLocation -> Sequence GLint-> IO ()
+    uniform4iv :: WebGLRenderingContext -> WebGLUniformLocation -> Sequence GLint-> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniformMatrix2fv($2, $3, $4)"
-    uniformMatrix2fv :: Ctx -> UniformLocation -> Bool -> TypedArray GLfloat -> IO ()
+    uniformMatrix2fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniformMatrix2fv($2, $3 Sequence GLfloat ->)"
-    uniformMatrix2fv :: Ctx -> UniformLocation -> Bool -> Sequence GLfloat -> IO ()
+    uniformMatrix2fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniformMatrix3fv($2, $3, $4)"
-    uniformMatrix3fv :: Ctx -> UniformLocation -> Bool -> TypedArray GLfloat -> IO ()
+    uniformMatrix3fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniformMatrix3fv($2, $3 Sequence GLfloat ->)"
-    uniformMatrix3fv :: Ctx -> UniformLocation -> Bool -> Sequence GLfloat -> IO ()
+    uniformMatrix3fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.uniformMatrix4fv($2, $3, $4)"
-    uniformMatrix4fv :: Ctx -> UniformLocation -> Bool -> TypedArray GLfloat -> IO ()
+    uniformMatrix4fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> SomeTypedArray m GLfloat -> IO ()
 
--- TypedArray GLfloat
+-- SomeTypedArray m GLfloat
 
 {-
 foreign import javascript unsafe "$1.uniformMatrix4fv($2, $3 Sequence GLfloat ->)"
-    uniformMatrix4fv :: Ctx -> UniformLocation -> Bool -> Sequence GLfloat -> IO ()
+    uniformMatrix4fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.useProgram($2)"
-    useProgram :: Ctx -> Program -> IO ()
+    useProgram :: WebGLRenderingContext -> WebGLProgram -> IO ()
 
 foreign import javascript unsafe "$1.validateProgram($2)"
-    validateProgram :: Ctx -> Program -> IO ()
+    validateProgram :: WebGLRenderingContext -> WebGLProgram -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib1f($2, $3)"
-    vertexAttrib1f :: Ctx -> GLuint -> GLfloat -> IO ()
+    vertexAttrib1f :: WebGLRenderingContext -> GLuint -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib1fv($2, $3)"
-    vertexAttrib1fv :: Ctx -> GLuint -> TypedArray GLfloat -> IO ()
+    vertexAttrib1fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib1fv($2 Sequence GLfloat ->)"
-    vertexAttrib1fv :: Ctx -> GLuint -> Sequence GLfloat -> IO ()
+    vertexAttrib1fv :: WebGLRenderingContext -> GLuint -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.vertexAttrib2f($2, $3, $4)"
-    vertexAttrib2f :: Ctx -> GLuint -> GLfloat -> GLfloat -> IO ()
+    vertexAttrib2f :: WebGLRenderingContext -> GLuint -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib2fv($2, $3)"
-    vertexAttrib2fv :: Ctx -> GLuint -> TypedArray GLfloat -> IO ()
+    vertexAttrib2fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib2fv($2 Sequence GLfloat ->)"
-    vertexAttrib2fv :: Ctx -> GLenum -> Sequence GLfloat -> IO ()
+    vertexAttrib2fv :: WebGLRenderingContext -> GLenum -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.vertexAttrib3f($2, $3, $4, $5)"
-    vertexAttrib3f :: Ctx -> GLuint -> GLfloat -> GLfloat -> GLfloat -> IO ()
+    vertexAttrib3f :: WebGLRenderingContext -> GLuint -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib3fv($2, $3)"
-    vertexAttrib3fv :: Ctx -> GLuint -> TypedArray GLfloat -> IO ()
+    vertexAttrib3fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib3fv($2 Sequence GLfloat ->)"
-    vertexAttrib3fv :: Ctx -> GLenum -> Sequence GLfloat -> IO ()
+    vertexAttrib3fv :: WebGLRenderingContext -> GLenum -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.vertexAttrib4f($2, $3, $4, $5, $6)"
-    vertexAttrib4f :: Ctx -> GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
+    vertexAttrib4f :: WebGLRenderingContext -> GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib4fv($2, $3)"
-    vertexAttrib4fv :: Ctx -> GLuint -> TypedArray GLfloat -> IO ()
+    vertexAttrib4fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray m GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib4fv($2 Sequence GLfloat ->)"
-    vertexAttrib4fv :: Ctx -> GLuint -> Sequence GLfloat -> IO ()
+    vertexAttrib4fv :: WebGLRenderingContext -> GLuint -> Sequence GLfloat -> IO ()
 -}
 
 foreign import javascript unsafe "$1.vertexAttribPointer($2, $3, $4, $5, $6, $7)"
-    vertexAttribPointer :: Ctx -> GLuint -> GLint-> GLenum -> GLboolean -> GLsizei -> GLintptr -> IO ()
+    vertexAttribPointer :: WebGLRenderingContext -> GLuint -> GLint-> GLenum -> GLboolean -> GLsizei -> GLintptr -> IO ()
 
 foreign import javascript unsafe "$1.viewport($2, $3, $4, $5)"
-    viewport :: Ctx -> GLint-> GLint-> GLsizei-> GLsizei-> IO ()
+    viewport :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> IO ()
+
+
+
+-- | Get Javascript WebGL Context from html canvas element
+foreign import javascript unsafe "$r = ($1.getContext(\"webgl\")) ? $1.getContext(\"webgl\") : $1.getContext(\"experimental-webgl\")"
+    getWebGLContext :: Canvas -> IO WebGLRenderingContext
+
