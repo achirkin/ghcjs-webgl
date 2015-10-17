@@ -9,7 +9,7 @@
 -- Stability   :  Experimental
 --
 -- WebGL types
--- https://www.khronos.org/registry/webgl/specs/1.0/
+-- https://www.khronos.org/registry/webgl/specs/1.0.3/
 --
 -----------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE DataKinds, PolyKinds #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  GHCJS.WebGL.Raw
@@ -73,7 +73,7 @@ foreign import javascript unsafe "$1ferData($2, $3, $4)"
 
 
 foreign import javascript unsafe "$1.bufferData($2, $3, $4)"
-    bufferData :: WebGLRenderingContext -> GLenum -> SomeArrayBuffer m -> GLenum -> IO ()
+    bufferData :: WebGLRenderingContext -> GLenum -> SomeArrayBuffer (m :: MutabilityType sk) -> GLenum -> IO ()
 
 --bufferData :: WebGLRenderingContext -> GLenum -> ArrayBuffer -> GLenum -> IO ()
 --bufferData gl t buf dr = bufferData' gl t (unsafeCoerce buf) dr
@@ -90,7 +90,7 @@ foreign import javascript unsafe "$1.bufferData($2, $3, $4)"
 -}
 
 foreign import javascript unsafe "$1.bufferSubData($2, $3, $4)"
-    bufferSubData :: WebGLRenderingContext -> GLenum -> GLintptr -> SomeArrayBuffer m -> IO ()
+    bufferSubData :: WebGLRenderingContext -> GLenum -> GLintptr -> SomeArrayBuffer (m :: MutabilityType sk) -> IO ()
 
 --bufferSubData :: WebGLRenderingContext -> GLenum -> GLintptr -> ArrayBuffer -> IO ()
 --bufferSubData a b c = bufferSubData' a b c . unsafeCoerce
@@ -131,11 +131,11 @@ foreign import javascript unsafe "$1.compileShader($2)"
     compileShader :: WebGLRenderingContext -> WebGLShader -> IO ()
 
 foreign import javascript unsafe "$1.compressedTexImage2D($2, $3, $4, $5, $6, $7, $8)"
-    compressedTexImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> SomeTypedArray m a -> IO ()
+    compressedTexImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> SomeTypedArray (m :: MutabilityType sk) a -> IO ()
 
 
 foreign import javascript unsafe "$1.compressedTexSubImage2D($2, $3, $4, $5, $6, $7, $8, $9)"
-    compressedTexSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> SomeTypedArray m a -> IO ()
+    compressedTexSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> SomeTypedArray (m :: MutabilityType sk) a -> IO ()
 
 
 foreign import javascript unsafe "$1.copyTexImage2D($2, $3, $4, $5, $6, $7, $8, $9)"
@@ -332,7 +332,7 @@ foreign import javascript unsafe "$1.polygonOffset($2, $3)"
     polygonOffset :: WebGLRenderingContext -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.readPixels($2, $3, $4, $5, $6, $7, $8)"
-    readPixels :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> SomeTypedArray m a -> IO ()
+    readPixels :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> SomeTypedArray (m :: MutabilityType sk) a -> IO ()
 
 foreign import javascript unsafe "$1.renderbufferStorage($2, $3, $4, $5)"
     renderbufferStorage :: WebGLRenderingContext -> GLenum -> GLenum -> GLsizei -> GLsizei -> IO ()
@@ -367,7 +367,7 @@ foreign import javascript unsafe "$1.stencilOpSeparate($2, $3, $4, $5)"
 -- | void texImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height
 --   , GLint border, GLenum format, GLenum type, ArrayBufferView? pixels)
 foreign import javascript unsafe "$1.texImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
-    texImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> SomeTypedArray m a -> IO ()
+    texImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> SomeTypedArray (m :: MutabilityType sk) a -> IO ()
 
 
 -- | void texImage2D(GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, TexImageSource? source)
@@ -390,7 +390,7 @@ foreign import javascript unsafe "$1.texParameteri($2, $3, $4)"
     texParameteri :: WebGLRenderingContext -> GLenum -> GLenum -> GLint-> IO ()
 
 foreign import javascript unsafe "$1.texSubImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
-    texSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> SomeTypedArray m a -> IO ()
+    texSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> SomeTypedArray (m :: MutabilityType sk) a -> IO ()
 
 {-
 
@@ -406,7 +406,7 @@ foreign import javascript unsafe "$1.uniform1f($2, $3)"
     uniform1f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform1fv($2, $3)"
-    uniform1fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLfloat -> IO ()
+    uniform1fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform1fv($2 Sequence GLfloat ->)"
@@ -417,7 +417,7 @@ foreign import javascript unsafe "$1.uniform1i($2, $3)"
     uniform1i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform1iv($2, $3)"
-    uniform1iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLint -> IO ()
+    uniform1iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray (m :: MutabilityType sk) GLint -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform1iv($2 Sequence GLint->)"
@@ -428,7 +428,7 @@ foreign import javascript unsafe "$1.uniform2f($2, $3, $4)"
     uniform2f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform2fv($2, $3)"
-    uniform2fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLfloat -> IO ()
+    uniform2fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform2fv($2 Sequence GLfloat ->)"
@@ -439,7 +439,7 @@ foreign import javascript unsafe "$1.uniform2i($2, $3, $4)"
     uniform2i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform2iv($2, $3)"
-    uniform2iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLint -> IO ()
+    uniform2iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray (m :: MutabilityType sk) GLint -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform2iv($2 Sequence GLint->)"
@@ -450,7 +450,7 @@ foreign import javascript unsafe "$1.uniform3f($2, $3, $4, $5)"
     uniform3f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform3fv($2, $3)"
-    uniform3fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLfloat -> IO ()
+    uniform3fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform3fv($2 Sequence GLfloat ->)"
@@ -461,7 +461,7 @@ foreign import javascript unsafe "$1.uniform3i($2, $3, $4, $5)"
     uniform3i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> GLint-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform3iv($2, $3)"
-    uniform3iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLint -> IO ()
+    uniform3iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray (m :: MutabilityType sk) GLint -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform3iv($2 Sequence GLint->)"
@@ -472,7 +472,7 @@ foreign import javascript unsafe "$1.uniform4f($2, $3, $4, $5, $6)"
     uniform4f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform4fv($2, $3)"
-    uniform4fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLfloat -> IO ()
+    uniform4fv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform4fv($2 Sequence GLfloat ->)"
@@ -483,7 +483,7 @@ foreign import javascript unsafe "$1.uniform4i($2, $3, $4, $5, $6)"
     uniform4i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> GLint-> GLint-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform4iv($2, $3)"
-    uniform4iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray m GLint -> IO ()
+    uniform4iv :: WebGLRenderingContext -> WebGLUniformLocation -> SomeTypedArray (m :: MutabilityType sk) GLint -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniform4iv($2 Sequence GLint->)"
@@ -491,7 +491,7 @@ foreign import javascript unsafe "$1.uniform4iv($2 Sequence GLint->)"
 -}
 
 foreign import javascript unsafe "$1.uniformMatrix2fv($2, $3, $4)"
-    uniformMatrix2fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> SomeTypedArray m GLfloat -> IO ()
+    uniformMatrix2fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniformMatrix2fv($2, $3 Sequence GLfloat ->)"
@@ -499,7 +499,7 @@ foreign import javascript unsafe "$1.uniformMatrix2fv($2, $3 Sequence GLfloat ->
 -}
 
 foreign import javascript unsafe "$1.uniformMatrix3fv($2, $3, $4)"
-    uniformMatrix3fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> SomeTypedArray m GLfloat -> IO ()
+    uniformMatrix3fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.uniformMatrix3fv($2, $3 Sequence GLfloat ->)"
@@ -507,9 +507,9 @@ foreign import javascript unsafe "$1.uniformMatrix3fv($2, $3 Sequence GLfloat ->
 -}
 
 foreign import javascript unsafe "$1.uniformMatrix4fv($2, $3, $4)"
-    uniformMatrix4fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> SomeTypedArray m GLfloat -> IO ()
+    uniformMatrix4fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
--- SomeTypedArray m GLfloat
+-- SomeTypedArray (m :: MutabilityType sk) GLfloat
 
 {-
 foreign import javascript unsafe "$1.uniformMatrix4fv($2, $3 Sequence GLfloat ->)"
@@ -526,7 +526,7 @@ foreign import javascript unsafe "$1.vertexAttrib1f($2, $3)"
     vertexAttrib1f :: WebGLRenderingContext -> GLuint -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib1fv($2, $3)"
-    vertexAttrib1fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray m GLfloat -> IO ()
+    vertexAttrib1fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib1fv($2 Sequence GLfloat ->)"
@@ -537,7 +537,7 @@ foreign import javascript unsafe "$1.vertexAttrib2f($2, $3, $4)"
     vertexAttrib2f :: WebGLRenderingContext -> GLuint -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib2fv($2, $3)"
-    vertexAttrib2fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray m GLfloat -> IO ()
+    vertexAttrib2fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib2fv($2 Sequence GLfloat ->)"
@@ -548,7 +548,7 @@ foreign import javascript unsafe "$1.vertexAttrib3f($2, $3, $4, $5)"
     vertexAttrib3f :: WebGLRenderingContext -> GLuint -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib3fv($2, $3)"
-    vertexAttrib3fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray m GLfloat -> IO ()
+    vertexAttrib3fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib3fv($2 Sequence GLfloat ->)"
@@ -559,7 +559,7 @@ foreign import javascript unsafe "$1.vertexAttrib4f($2, $3, $4, $5, $6)"
     vertexAttrib4f :: WebGLRenderingContext -> GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib4fv($2, $3)"
-    vertexAttrib4fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray m GLfloat -> IO ()
+    vertexAttrib4fv :: WebGLRenderingContext -> GLuint -> SomeTypedArray (m :: MutabilityType sk) GLfloat -> IO ()
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib4fv($2 Sequence GLfloat ->)"

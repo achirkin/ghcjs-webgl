@@ -20,11 +20,14 @@ import GHCJS.WebGL
 
 test :: Int -> [Double] -> TypedArray Double
 test n xs = ST.runST $ do
-    starr <- ST.thaw arr0
+    starr <- ST.slice 0 (Just $ length xs + 2) arr0
+    let dview = dataView . arrayBuffer $ starr
     ST.setList 2 xs starr
-    ST.setIndex 0 (fromIntegral n) starr
+    ST.setIndex 0 (fromIntegral $ arrayLength arr0) starr
+    ST.setIndex 1 (fromIntegral $ byteLength arr0) starr
+    ST.unsafeWriteDouble 16 666.66 dview
     ST.unsafeFreeze starr
-    where arr0 = typedArray n :: TypedArray Double
+    where arr0 = typedArray n
 
 main :: IO ()
 main = do

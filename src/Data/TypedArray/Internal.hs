@@ -44,6 +44,10 @@ foreign import javascript unsafe "$1.length"
 foreign import javascript unsafe "$1.buffer"
     arrayBuffer :: SomeTypedArray m a -> SomeArrayBuffer m
 
+{-# INLINE dataView #-}
+-- | Create a DataView for the whole ArrayBuffer
+foreign import javascript unsafe "new DataView($1)"
+    dataView :: SomeArrayBuffer m -> SomeDataView m
 
 -----------------------------------------------------------------------------
 -- Some not exposed js imports
@@ -84,6 +88,25 @@ foreign import javascript unsafe
 foreign import javascript unsafe
   "$3.slice($1,$2)" js_slice_imm :: Int -> Int -> JSVal -> JSVal
 
+-- Creating data views
+
+
+{-# INLINE js_dataView2 #-}
+foreign import javascript safe "new DataView($2,$1)"
+    js_dataView2 :: Int -> JSVal -> SomeDataView m
+{-# INLINE js_unsafeDataView2 #-}
+foreign import javascript unsafe "new DataView($2,$1)"
+    js_unsafeDataView2 :: Int -> JSVal-> SomeDataView m
+{-# INLINE js_dataView #-}
+foreign import javascript safe "new DataView($3,$1,$2)"
+    js_dataView :: Int -> Int -> JSVal -> SomeDataView m
+{-# INLINE js_unsafeDataView #-}
+foreign import javascript unsafe "new DataView($3,$1,$2)"
+    js_unsafeDataView :: Int -> Int -> JSVal -> JSVal
+
+{-# INLINE js_cloneDataView #-}
+foreign import javascript unsafe "new DataView($1.buffer.slice($1.byteOffset, $1.byteLength))"
+    js_cloneDataView :: SomeDataView m0 -> State# s -> (# State# s, SomeDataView m #)
 
 -----------------------------------------------------------------------------
 -- All mutable data functions
@@ -163,7 +186,56 @@ JSTYPEDARRAY(CULong,Uint32,Uint32Array,4)
 JSTYPEDARRAY(CFloat,Float32,Float32Array,4)
 JSTYPEDARRAY(CDouble,Float64,Float64Array,8)
 
+-----------------------------------------------------------------------------
+-- All DataView functions
+-----------------------------------------------------------------------------
 
+#define DATAVIEW(T, JSget, JSset, JSSize) \
+foreign import javascript unsafe "$2.JSget($1)"      js_i_unsafeGet/**/T/**/BE  :: Int -> DataView -> T;{-# INLINE js_i_unsafeGet/**/T/**/BE #-};\
+foreign import javascript unsafe "$2.JSget($1,true)" js_i_unsafeGet/**/T/**/LE  :: Int -> DataView -> T;{-# INLINE js_i_unsafeGet/**/T/**/LE #-};\
+foreign import javascript safe   "$2.JSget($1)"      js_i_safeGet/**/T/**/BE    :: Int -> DataView -> T;{-# INLINE js_i_safeGet/**/T/**/BE #-};\
+foreign import javascript safe   "$2.JSget($1,true)" js_i_safeGet/**/T/**/LE    :: Int -> DataView -> T;{-# INLINE js_i_safeGet/**/T/**/LE #-};\
+foreign import javascript unsafe "$2.JSget($1)"      js_m_unsafeGet/**/T/**/BE  :: Int -> SomeDataView m -> State# s -> (# State# s, T #);{-# INLINE js_m_unsafeGet/**/T/**/BE #-};\
+foreign import javascript unsafe "$2.JSget($1,true)" js_m_unsafeGet/**/T/**/LE  :: Int -> SomeDataView m -> State# s -> (# State# s, T #);{-# INLINE js_m_unsafeGet/**/T/**/LE #-};\
+foreign import javascript safe   "$2.JSget($1)"      js_m_safeGet/**/T/**/BE    :: Int -> SomeDataView m -> State# s -> (# State# s, T #);{-# INLINE js_m_safeGet/**/T/**/BE #-};\
+foreign import javascript safe   "$2.JSget($1,true)" js_m_safeGet/**/T/**/LE    :: Int -> SomeDataView m -> State# s -> (# State# s, T #);{-# INLINE js_m_safeGet/**/T/**/LE #-};\
+foreign import javascript unsafe "$3.JSset($1,$2)"      js_unsafeSet/**/T/**/BE :: Int -> T -> SomeDataView m -> State# s -> (# State# s, () #);{-# INLINE js_unsafeSet/**/T/**/BE #-};\
+foreign import javascript unsafe "$3.JSset($1,$2,true)" js_unsafeSet/**/T/**/LE :: Int -> T -> SomeDataView m -> State# s -> (# State# s, () #);{-# INLINE js_unsafeSet/**/T/**/LE #-};\
+foreign import javascript safe   "$3.JSset($1,$2)"      js_safeSet/**/T/**/BE   :: Int -> T -> SomeDataView m -> State# s -> (# State# s, () #);{-# INLINE js_safeSet/**/T/**/BE #-};\
+foreign import javascript safe   "$3.JSset($1,$2,true)" js_safeSet/**/T/**/LE   :: Int -> T -> SomeDataView m -> State# s -> (# State# s, () #);{-# INLINE js_safeSet/**/T/**/LE #-};
+
+#define DATAVIEW8(T, JSget, JSset, JSSize) \
+foreign import javascript unsafe "$2.JSget($1)"    js_i_unsafeGet/**/T :: Int -> DataView -> T;{-# INLINE js_i_unsafeGet/**/T #-};\
+foreign import javascript safe   "$2.JSget($1)"    js_i_safeGet/**/T   :: Int -> DataView -> T;{-# INLINE js_i_safeGet/**/T #-};\
+foreign import javascript unsafe "$2.JSget($1)"    js_m_unsafeGet/**/T :: Int -> SomeDataView m -> State# s -> (# State# s, T #);{-# INLINE js_m_unsafeGet/**/T #-};\
+foreign import javascript safe   "$2.JSget($1)"    js_m_safeGet/**/T   :: Int -> SomeDataView m -> State# s -> (# State# s, T #);{-# INLINE js_m_safeGet/**/T #-};\
+foreign import javascript unsafe "$3.JSset($1,$2)" js_unsafeSet/**/T   :: Int -> T -> SomeDataView m -> State# s -> (# State# s, () #);{-# INLINE js_unsafeSet/**/T #-};\
+foreign import javascript safe   "$3.JSset($1,$2)" js_safeSet/**/T     :: Int -> T -> SomeDataView m -> State# s -> (# State# s, () #);{-# INLINE js_safeSet/**/T #-};
+
+
+DATAVIEW(Int,getInt32,setInt32,4)
+DATAVIEW(Int32,getInt32,setInt32,4)
+DATAVIEW(Int16,getInt16,setInt16,2)
+DATAVIEW(Word,getUint32,setUint32,4)
+DATAVIEW(Word32,getUint32,setUint32,4)
+DATAVIEW(Word16,getUint16,setUint16,2)
+DATAVIEW(Float,getFloat32,setFloat32,4)
+DATAVIEW(Double,getFloat64,setFloat64,8)
+--DATAVIEW(CShort,getInt16,setInt16,2)
+--DATAVIEW(CUShort,getUint16,setUint16,2)
+--DATAVIEW(CInt,getInt32,setInt32,4)
+--DATAVIEW(CUInt,getUint32,setUint32,4)
+--DATAVIEW(CLong,getInt32,setInt32,4)
+--DATAVIEW(CULong,getUint32,setUint32,4)
+--DATAVIEW(CFloat,getFloat32,setFloat32,4)
+--DATAVIEW(CDouble,getFloat64,setFloat64,8)
+
+
+DATAVIEW8(Word8,getUint8,setUint8,1)
+DATAVIEW8(Int8,getInt8,setInt8,1)
+--DATAVIEW8(CChar,getInt8,setInt8,1)
+--DATAVIEW8(CSChar,getInt8,setInt8,1)
+--DATAVIEW8(CUChar,getUint8,setUint8,1)
 
 -----------------------------------------------------------------------------
 -- Misc

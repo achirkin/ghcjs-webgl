@@ -57,11 +57,20 @@ instance PToJSVal (SomeArrayBuffer m) where
 instance PFromJSVal (SomeArrayBuffer m) where
     pFromJSVal = SomeArrayBuffer
 
+-- | Data view on ArrayBuffer, mutable or immutable
+newtype SomeDataView (a :: MutabilityType s) = SomeDataView JSVal deriving Typeable
+instance IsJSVal (SomeDataView m)
 
 
-type family ImmutableVersion a where
-    ImmutableVersion (SomeArrayBuffer m) = ArrayBuffer
-    ImmutableVersion (SomeTypedArray m t) = TypedArray t
+type DataView     = SomeDataView 'Immutable
+type IODataView   = SomeDataView 'Mutable
+type STDataView s = SomeDataView ('STMutable s)
+
+instance PToJSVal (SomeDataView m) where
+    pToJSVal (SomeDataView b) = b
+instance PFromJSVal (SomeDataView m) where
+    pFromJSVal = SomeDataView
+
 
 
 -- following should come from GHCJS.Internal.Types

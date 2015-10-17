@@ -8,8 +8,8 @@
 -- Stability   :  Experimental
 --
 -- This module reexports functionality of the three modules in the package.
--- Contains all functions, constants and types available in WebGL 1.0 spec.
--- https://www.khronos.org/registry/webgl/specs/1.0/
+-- Contains all functions, constants and types available in WebGL 1.0.3 spec.
+-- https://www.khronos.org/registry/webgl/specs/1.0.3/
 --
 -----------------------------------------------------------------------------
 
