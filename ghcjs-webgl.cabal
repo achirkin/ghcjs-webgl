@@ -13,50 +13,29 @@ synopsis: GHCJS WebGL binding
 description:
     Minimalistic, yet (hopefully) fully functional WebGL binding.
     All functions are in one-to-one correspondence.
-    ArrayBuffers from JS correspond to primitive MutableByteArray in HS
-    (that is how GHCJS works).
-    Couple wrappers are written to work with TypedArrays naturally
-    (they are a type family within a type class).
+    Updated to fit ghcjs-base-0.2.* .
 category: OpenGL, WebGL, GHCJS
 author: Artem Chirkin
 
 library
     exposed-modules:
-        Data.TypedArray
-        Data.TypedArray.IO
-        Data.TypedArray.ST
         GHCJS.WebGL
         GHCJS.WebGL.Raw
         GHCJS.WebGL.Const
         GHCJS.WebGL.Types
     build-depends:
-        primitive >=0.5.4.0 && <0.7,
         base >=4.2 && <5,
-        ghc-prim ==0.4.*,
-        ghcjs-base ==0.2.*,
-        ghcjs-prim ==0.1.*
-    js-sources:
-        jsbits/array.js
+        ghcjs-base ==0.2.*
     default-language: Haskell2010
     hs-source-dirs: src
-    other-modules:
-        Data.TypedArray.Internal
-        Data.TypedArray.Types
     ghc-options: -Wall
 
 test-suite SimpleWebGL
     type: exitcode-stdio-1.0
     main-is: SimpleWebGL.hs
     build-depends:
-        primitive >=0.5.4.0 && <0.7,
         base >=4.2 && <5,
-        ghc-prim ==0.4.*,
-        ghcjs-base ==0.2.*,
-        ghcjs-prim ==0.1.*
-    js-sources:
-        jsbits/array.js
+        ghcjs-base ==0.2.*
     default-language: Haskell2010
     hs-source-dirs: test src
-    other-modules:
-        GHCJS.WebGL
     ghc-options: -Wall

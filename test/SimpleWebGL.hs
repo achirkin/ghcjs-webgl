@@ -2,36 +2,19 @@
 {-# LANGUAGE JavaScriptFFI #-}
 module Main (main) where
 
-import Control.Monad (liftM)
-
 import Prelude hiding (unlines)
 import Data.JSString hiding (length)
-import Data.TypedArray
-import Data.TypedArray.IO
-
-import qualified Control.Monad.ST as ST
-import qualified Data.TypedArray.ST as ST
 
 import GHCJS.Types
 import qualified JavaScript.Web.Canvas as Canvas
 
+import JavaScript.TypedArray
+import JavaScript.TypedArray.IO
+
 import GHCJS.WebGL
-
-
-test :: Int -> [Double] -> TypedArray Double
-test n xs = ST.runST $ do
-    starr <- ST.slice 0 (Just $ length xs + 2) arr0
-    let dview = dataView . arrayBuffer $ starr
-    ST.setList 2 xs starr
-    ST.setIndex 0 (fromIntegral $ arrayLength arr0) starr
-    ST.setIndex 1 (fromIntegral $ byteLength arr0) starr
-    ST.unsafeWriteDouble 16 666.66 dview
-    ST.unsafeFreeze starr
-    where arr0 = typedArray n
 
 main :: IO ()
 main = do
-    print (test 8 [1.25,-12,3])
     -- create canvas and get context
     canvas <- Canvas.create 800 400
     addElementToBody (jsval canvas)
@@ -56,6 +39,37 @@ main = do
     drawBuffers gl (posLoc,colLoc) trigbuf
     drawBuffers gl (posLoc,colLoc) rectbuf
 
+-- | geometry data type for our test: stores coordinates, colors, and indices (for indexed drawing)
+data Geometry = Geometry {
+    coords ::  [[GLfloat]],
+    colors ::  [[GLubyte]],
+    indices :: Maybe [GLushort]
+    }
+
+rectangle :: Geometry
+rectangle = Geometry {
+    coords = [[ 0.05,  0.9, 0]
+             ,[ 0.95,  0.9, 0]
+             ,[ 0.95, -0.9, 0]
+             ,[ 0.05, -0.9, 0]],
+    colors = [[ 255, 0, 0  ]
+             ,[ 0, 255, 0  ]
+             ,[ 0,   0, 255]
+             ,[ 0, 127, 127]],
+    indices = Just [0,1,2,0,2,3]
+    }
+
+triangle :: Geometry
+triangle = Geometry {
+    coords = [[-0.95,-0.8, 0]
+             ,[-0.50, 0.8, 0]
+             ,[-0.05,-0.8, 0]],
+    colors = [[ 255, 0, 0]
+             ,[ 0, 255, 0]
+             ,[ 0, 0, 255]],
+    indices = Nothing
+    }
+
 -- | initialize shader program and get attribute and uniform locations
 initShaders :: WebGLRenderingContext -> IO (WebGLUniformLocation, GLuint, GLuint)
 initShaders gl = do
@@ -67,8 +81,8 @@ initShaders gl = do
     -- link program
     linkProgram gl shaderProgram
     -- get attribute locations (getAttribLocation returns GLint, but we use always GLuint)
-    posLoc <- liftM fromIntegral $ getAttribLocation gl shaderProgram "aVertexPosition"
-    colorLoc <- liftM fromIntegral $ getAttribLocation gl shaderProgram "aVertexColor"
+    posLoc <- fromIntegral <$> getAttribLocation gl shaderProgram "aVertexPosition"
+    colorLoc <- fromIntegral <$> getAttribLocation gl shaderProgram "aVertexColor"
     -- get uniform locations
     matLoc <- getUniformLocation gl shaderProgram "uPMV"
     -- activate shader program
@@ -101,13 +115,6 @@ packVertColors pnts cls buf = f pnts cls 0
           f _ _ _ = return ()
           floatView = arrayView buf
           byteView  = arrayView buf
-
--- | test Geometry
-data Geometry = Geometry {
-    coords ::  [[GLfloat]],
-    colors ::  [[GLubyte]],
-    indices :: Maybe [GLushort]
-    }
 
 -- | Pack geometry data into buffers
 createBuffers :: WebGLRenderingContext -> Geometry -> IO (GLsizei, WebGLBuffer, Maybe WebGLBuffer)
@@ -144,30 +151,6 @@ drawBuffers gl (posLoc, colLoc) (size,buf,mibuf) = do
             bindBuffer gl gl_ELEMENT_ARRAY_BUFFER ibuf
             drawElements gl gl_TRIANGLES size gl_UNSIGNED_SHORT 0
 
-rectangle :: Geometry
-rectangle = Geometry {
-    coords = [[ 0.05,  0.9, 0]
-             ,[ 0.95,  0.9, 0]
-             ,[ 0.95, -0.9, 0]
-             ,[ 0.05, -0.9, 0]],
-    colors = [[ 255, 0, 0  ]
-             ,[ 0, 255, 0  ]
-             ,[ 0,   0, 255]
-             ,[ 0, 127, 127]],
-    indices = Just [0,1,2,0,2,3]
-    }
-
-triangle :: Geometry
-triangle = Geometry {
-    coords = [[-0.95,-0.8, 0]
-             ,[-0.50, 0.8, 0]
-             ,[-0.05,-0.8, 0]],
-    colors = [[ 255, 0, 0]
-             ,[ 0, 255, 0]
-             ,[ 0, 0, 255]],
-    indices = Nothing
-    }
-
 fragmentShaderText :: JSString
 fragmentShaderText = unlines [
   "precision mediump float;",
@@ -186,7 +169,6 @@ vertexShaderText = unlines [
   "  gl_Position = uPMV * vec4(aVertexPosition, 1.0);",
   "  vColor = aVertexColor;",
   "}"]
-
 
 foreign import javascript safe "document.body.appendChild($1)"
     addElementToBody :: JSVal -> IO ()
