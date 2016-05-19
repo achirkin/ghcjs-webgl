@@ -1,8 +1,8 @@
 -----------------------------------------------------------------------------
 -- |
--- Module      :  GHCJS.WebGL.Const
+-- Module      :  JsHs.WebGL.Const
 -- Copyright   :  Copyright (C) 2015 Artem M. Chirkin <chirkin@arch.ethz.ch>
--- License     :  BSD3
+-- License     :  MIT
 --
 -- Maintainer  :  Artem M. Chirkin <chirkin@arch.ethz.ch>
 -- Stability   :  Experimental
@@ -11,9 +11,9 @@
 --
 -----------------------------------------------------------------------------
 
-module GHCJS.WebGL.Const where
+module JsHs.WebGL.Const where
 
-import GHCJS.WebGL.Types (GLenum)
+import JsHs.WebGL.Types (GLenum)
 
 gl_DEPTH_BUFFER_BIT :: GLenum
 gl_DEPTH_BUFFER_BIT = 0x00000100

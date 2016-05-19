@@ -2,9 +2,9 @@
 {-# LANGUAGE JavaScriptFFI #-}
 -----------------------------------------------------------------------------
 -- |
--- Module      :  GHCJS.WebGL.Raw
+-- Module      :  JsHs.WebGL.Raw
 -- Copyright   :  Copyright (C) 2015 Artem M. Chirkin <chirkin@arch.ethz.ch>
--- License     :  BSD3
+-- License     :  MIT
 --
 -- Maintainer  :  Artem M. Chirkin <chirkin@arch.ethz.ch>
 -- Stability   :  Experimental
@@ -14,17 +14,15 @@
 --
 -----------------------------------------------------------------------------
 
-module GHCJS.WebGL.Raw where
+module JsHs.WebGL.Raw where
 
 
-import GHCJS.Types
+import JsHs.Types
 
-import GHCJS.WebGL.Types
+import JsHs.WebGL.Types
 
-import JavaScript.TypedArray
-import JavaScript.Web.Canvas
+import JsHs.TypedArray
 
---import Unsafe.Coerce (unsafeCoerce)
 
 foreign import javascript unsafe "$1.activeTexture($2)"
     activeTexture :: WebGLRenderingContext -> GLenum -> IO ()

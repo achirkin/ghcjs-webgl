@@ -2,7 +2,7 @@
 -- |
 -- Module      :  GHCJS.WebGL
 -- Copyright   :  Copyright (C) 2015 Artem M. Chirkin <chirkin@arch.ethz.ch>
--- License     :  BSD3
+-- License     :  MIT
 --
 -- Maintainer  :  Artem M. Chirkin <chirkin@arch.ethz.ch>
 -- Stability   :  Experimental
@@ -13,12 +13,12 @@
 --
 -----------------------------------------------------------------------------
 
-module GHCJS.WebGL
-    ( module GHCJS.WebGL.Types
-    , module GHCJS.WebGL.Const
-    , module GHCJS.WebGL.Raw
+module JsHs.WebGL
+    ( module JsHs.WebGL.Types
+    , module JsHs.WebGL.Const
+    , module JsHs.WebGL.Raw
     ) where
 
-import GHCJS.WebGL.Types
-import GHCJS.WebGL.Const
-import GHCJS.WebGL.Raw
+import JsHs.WebGL.Types
+import JsHs.WebGL.Const
+import JsHs.WebGL.Raw

@@ -3,21 +3,18 @@
 module Main (main) where
 
 import Prelude hiding (unlines)
-import Data.JSString hiding (length)
+import JsHs.JSString hiding (length)
 
-import GHCJS.Types
-import qualified JavaScript.Web.Canvas as Canvas
 
-import JavaScript.TypedArray
-import JavaScript.TypedArray.IO
+import JsHs.TypedArray
+import JsHs.TypedArray.IO
 
-import GHCJS.WebGL
+import JsHs.WebGL
 
 main :: IO ()
 main = do
     -- create canvas and get context
-    canvas <- Canvas.create 800 400
-    addElementToBody (jsval canvas)
+    canvas <- addCanvasToBody 800 400
     gl <- getWebGLContext canvas
     -- set up viewport
     clearColor gl 0.1 0.2 0.4 (800/400)
@@ -170,5 +167,5 @@ vertexShaderText = unlines [
   "  vColor = aVertexColor;",
   "}"]
 
-foreign import javascript safe "document.body.appendChild($1)"
-    addElementToBody :: JSVal -> IO ()
+foreign import javascript safe "var ca = document.createElement('canvas'); ca.width = $1; ca.height = $2; document.body.appendChild(ca); $r = ca;"
+    addCanvasToBody :: Int -> Int -> IO Canvas
