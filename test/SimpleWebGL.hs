@@ -168,4 +168,4 @@ vertexShaderText = unlines [
   "}"]
 
 foreign import javascript safe "var ca = document.createElement('canvas'); ca.width = $1; ca.height = $2; document.body.appendChild(ca); $r = ca;"
-    addCanvasToBody :: Int -> Int -> IO Canvas
+    addCanvasToBody :: Int -> Int -> IO WebGLCanvas

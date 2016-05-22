@@ -18,6 +18,7 @@ module JsHs.WebGL.Raw where
 
 
 import JsHs.Types
+import JsHs.Types.Prim
 
 import JsHs.WebGL.Types
 
@@ -335,8 +336,12 @@ foreign import javascript unsafe "$1.stencilOpSeparate($2, $3, $4, $5)"
 
 -- | void texImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height
 --   , GLint border, GLenum format, GLenum type, ArrayBufferView? pixels)
+texImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> Maybe (SomeTypedArray m a) -> IO ()
+texImage2D a1 a2 a3 a4 a5 a6 a7 a8 a9 (Just a10) = texImage2D' a1 a2 a3 a4 a5 a6 a7 a8 a9 (jsval a10)
+texImage2D a1 a2 a3 a4 a5 a6 a7 a8 a9 Nothing    = texImage2D' a1 a2 a3 a4 a5 a6 a7 a8 a9 jsNull
+
 foreign import javascript unsafe "$1.texImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
-    texImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> SomeTypedArray m a -> IO ()
+    texImage2D' :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> JSVal -> IO ()
 
 
 -- | void texImage2D(GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, TexImageSource? source)
@@ -544,6 +549,6 @@ foreign import javascript unsafe "$1.viewport($2, $3, $4, $5)"
 
 
 -- | Get Javascript WebGL Context from html canvas element
-foreign import javascript unsafe "$r = ($1.getContext(\"webgl\")) ? $1.getContext(\"webgl\") : $1.getContext(\"experimental-webgl\")"
-    getWebGLContext :: Canvas -> IO WebGLRenderingContext
+foreign import javascript unsafe "$r = ($1.getContext(\"webgl\")) ? $1.getContext(\"webgl\") : $1.getContext(\"experimental-webgl\");"
+    getWebGLContext :: WebGLCanvas -> IO WebGLRenderingContext
 

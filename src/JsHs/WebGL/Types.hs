@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-unused-binds #-}
+{-# LANGUAGE DataKinds, FlexibleInstances, MultiParamTypeClasses #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  JsHs.WebGL.Types
@@ -14,7 +15,7 @@
 -----------------------------------------------------------------------------
 
 module JsHs.WebGL.Types
-    ( Canvas
+    ( WebGLCanvas
     , GLboolean, GLbyte, GLubyte, GLshort, GLushort, GLint, GLuint
     , GLfixed, GLint64, GLuint64, GLsizei, GLenum, GLintptr, GLsizeiptr
     , GLsync, GLbitfield, GLhalf, GLfloat, GLclampf, GLdouble, GLclampd
@@ -31,12 +32,17 @@ module JsHs.WebGL.Types
 ) where
 
 import JsHs.Types
+import JsHs.LikeJS.Class
+import JsHs.Nullable
+
 import Data.Word
 import Foreign hiding (sizeOf)
 
 
-newtype Canvas = Canvas JSVal
-instance IsJSVal Canvas
+newtype WebGLCanvas = WebGLCanvas JSVal
+instance IsJSVal WebGLCanvas
+instance LikeJS "HTMLCanvasElement" WebGLCanvas
+instance Nullable WebGLCanvas
 
 -- | 8bit boolean.
 type GLboolean = Bool -- Word8
@@ -110,6 +116,8 @@ type GLclampd = Double
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.14
 newtype WebGLRenderingContext = WebGLRenderingContext JSVal
 instance IsJSVal WebGLRenderingContext
+instance LikeJS "WebGLRenderingContext" WebGLRenderingContext
+instance Nullable WebGLRenderingContext
 
 -- | The WebGLBuffer interface represents an OpenGL Buffer Object.
 --   The underlying object is created as if by calling glGenBuffers (OpenGL ES 2.0 §2.9, man page),
@@ -118,6 +126,8 @@ instance IsJSVal WebGLRenderingContext
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.4
 newtype WebGLBuffer = WebGLBuffer JSVal
 instance IsJSVal WebGLBuffer
+instance LikeJS "WebGLBuffer" WebGLBuffer
+instance Nullable WebGLBuffer
 
 -- | The WebGLFramebuffer interface represents an OpenGL Framebuffer Object.
 --   The underlying object is created as if by calling glGenFramebuffers (OpenGL ES 2.0 §4.4.1, man page),
@@ -126,6 +136,8 @@ instance IsJSVal WebGLBuffer
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.5
 newtype WebGLFramebuffer = WebGLFramebuffer JSVal
 instance IsJSVal WebGLFramebuffer
+instance LikeJS "WebGLFramebuffer" WebGLFramebuffer
+instance Nullable WebGLFramebuffer
 
 -- | The WebGLProgram interface represents an OpenGL Program Object.
 --   The underlying object is created as if by calling glCreateProgram (OpenGL ES 2.0 §2.10.3, man page),
@@ -134,6 +146,8 @@ instance IsJSVal WebGLFramebuffer
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.6
 newtype WebGLProgram = WebGLProgram JSVal
 instance IsJSVal WebGLProgram
+instance LikeJS "WebGLProgram" WebGLProgram
+instance Nullable WebGLProgram
 
 -- | The WebGLRenderbuffer interface represents an OpenGL Renderbuffer Object.
 --   The underlying object is created as if by calling glGenRenderbuffers (OpenGL ES 2.0 §4.4.3, man page),
@@ -142,6 +156,8 @@ instance IsJSVal WebGLProgram
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.7
 newtype WebGLRenderbuffer = WebGLRenderbuffer JSVal
 instance IsJSVal WebGLRenderbuffer
+instance LikeJS "WebGLRenderbuffer" WebGLRenderbuffer
+instance Nullable WebGLRenderbuffer
 
 -- | The WebGLShader interface represents an OpenGL Shader Object.
 --   The underlying object is created as if by calling glCreateShader (OpenGL ES 2.0 §2.10.1, man page),
@@ -150,6 +166,8 @@ instance IsJSVal WebGLRenderbuffer
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.8
 newtype WebGLShader = WebGLShader JSVal
 instance IsJSVal WebGLShader
+instance LikeJS "WebGLShader" WebGLShader
+instance Nullable WebGLShader
 
 -- | The WebGLTexture interface represents an OpenGL Texture Object.
 --   The underlying object is created as if by calling glGenTextures (OpenGL ES 2.0 §3.7.13, man page),
@@ -158,18 +176,24 @@ instance IsJSVal WebGLShader
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.9
 newtype WebGLTexture = WebGLTexture JSVal
 instance IsJSVal WebGLTexture
+instance LikeJS "WebGLTexture" WebGLTexture
+instance Nullable WebGLTexture
 
 
 -- | The WebGLUniformLocation interface represents the location of a uniform variable in a shader program.
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.10
 newtype WebGLUniformLocation = WebGLUniformLocation JSVal
 instance IsJSVal WebGLUniformLocation
+instance LikeJS "WebGLUniformLocation" WebGLUniformLocation
+instance Nullable WebGLUniformLocation
 
 
 -- | The WebGLActiveInfo interface represents the information returned from the getActiveAttrib and getActiveUniform calls.
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.11
 newtype WebGLActiveInfo = WebGLActiveInfo JSVal
 instance IsJSVal WebGLActiveInfo
+instance LikeJS "WebGLActiveInfo" WebGLActiveInfo
+instance Nullable WebGLActiveInfo
 -- | readonly attribute GLint size: The size of the requested variable.
 foreign import javascript unsafe "$r = $1.size"
     aiSize :: WebGLActiveInfo -> GLint
@@ -184,6 +208,8 @@ foreign import javascript unsafe "$r = $1.name"
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#5.12
 newtype WebGLShaderPrecisionFormat = WebGLShaderPrecisionFormat JSVal
 instance IsJSVal WebGLShaderPrecisionFormat
+instance LikeJS "WebGLShaderPrecisionFormat" WebGLShaderPrecisionFormat
+instance Nullable WebGLShaderPrecisionFormat
 -- | readonly attribute GLint rangeMin: The base 2 log of the absolute value of the minimum value that can be represented.
 foreign import javascript unsafe "$r = $1.rangeMin"
     rangeMin :: WebGLShaderPrecisionFormat -> GLint
@@ -199,3 +225,5 @@ foreign import javascript unsafe "$r = $1.precision"
 --   https://www.khronos.org/registry/webgl/specs/1.0.3/#6.7
 newtype TexImageSource = TexImageSource JSVal
 instance IsJSVal TexImageSource
+instance LikeJS "TexImageSource" TexImageSource
+instance Nullable TexImageSource
