@@ -13,7 +13,7 @@ packages:
   - '.'
   - location:
       git: https://github.com/achirkin/easytensor.git
-      commit: 8259a3f844f087a86c18b4d57255cf0325a6a8ff
+      commit: c51acab375ed7a194b9c1b87fdf151242406f001
     subdirs:
       - dimensions
       - easytensor

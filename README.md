@@ -12,9 +12,3 @@ shows how to work with shaders (compile, pass uniforms and attributes),
 pack interleaved arrays, and draw buffers (directly or indiced).
 
 
-### Dependencies:
-
-source-repository head
-  type:     git
-  location: https://github.com/achirkin/qua-kit
-  subdir:   libs/hs/ghcjs-hs-interop

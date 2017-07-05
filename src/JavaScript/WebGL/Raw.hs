@@ -18,9 +18,11 @@
 module JavaScript.WebGL.Raw where
 
 
-import GHCJS.Types (JSString, JSVal, jsval, nullRef)
+import GHCJS.Types (JSString, JSVal, nullRef)
 import JavaScript.TypedArray.ArrayBuffer
 import JavaScript.Web.Canvas (Canvas)
+import Unsafe.Coerce
+
 import Numeric.Dimensions
 import Numeric.DataFrame
 
@@ -102,14 +104,14 @@ foreign import javascript unsafe "$1.compileShader($2)"
     compileShader :: WebGLRenderingContext -> WebGLShader -> IO ()
 
 foreign import javascript unsafe "$1.compressedTexImage2D($2, $3, $4, $5, $6, $7, $8)"
-    compressedTexImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> DataFrame t (ds::[Nat]) -> IO ()
---compressedTexImage2D :: IsArrayBufferView a => WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> a -> IO ()
---compressedTexImage2D a b c d e f g = js_compressedTexImage2D a b c d e f g . asArrayBufferView
+    js_compressedTexImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> JSVal -> IO ()
+compressedTexImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> DataFrame t (ds::[Nat]) -> IO ()
+compressedTexImage2D a b c d e f g = js_compressedTexImage2D a b c d e f g . unsafeCoerce
 
 foreign import javascript unsafe "$1.compressedTexSubImage2D($2, $3, $4, $5, $6, $7, $8, $9)"
-    compressedTexSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> DataFrame t (ds::[Nat]) -> IO ()
---compressedTexSubImage2D :: IsArrayBufferView a => WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> a -> IO ()
---compressedTexSubImage2D a b c d e f g h = js_compressedTexSubImage2D a b c d e f g h . asArrayBufferView
+    js_compressedTexSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> JSVal -> IO ()
+compressedTexSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> DataFrame t (ds::[Nat]) -> IO ()
+compressedTexSubImage2D a b c d e f g h = js_compressedTexSubImage2D a b c d e f g h . unsafeCoerce
 
 foreign import javascript unsafe "$1.copyTexImage2D($2, $3, $4, $5, $6, $7, $8, $9)"
     copyTexImage2D :: WebGLRenderingContext -> GLenum -> GLint -> GLenum -> GLint -> GLint -> GLsizei -> GLsizei-> GLint-> IO ()
@@ -305,9 +307,9 @@ foreign import javascript unsafe "$1.polygonOffset($2, $3)"
     polygonOffset :: WebGLRenderingContext -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.readPixels($2, $3, $4, $5, $6, $7, $8)"
-    readPixels :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> DataFrame t (ds::[Nat]) -> IO ()
---readPixels :: IsArrayBufferView a => WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> a -> IO ()
---readPixels a b c d e f g = js_readPixels a b c d e f g . asArrayBufferView
+    js_readPixels :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> JSVal -> IO ()
+readPixels :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> DataFrame t (ds::[Nat]) -> IO ()
+readPixels a b c d e f g = js_readPixels a b c d e f g . unsafeCoerce
 
 foreign import javascript unsafe "$1.renderbufferStorage($2, $3, $4, $5)"
     renderbufferStorage :: WebGLRenderingContext -> GLenum -> GLenum -> GLsizei -> GLsizei -> IO ()
@@ -342,7 +344,7 @@ foreign import javascript unsafe "$1.stencilOpSeparate($2, $3, $4, $5)"
 -- | void texImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height
 --   , GLint border, GLenum format, GLenum type, ArrayBufferView? pixels)
 texImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLenum -> GLsizei-> GLsizei-> GLint-> GLenum -> GLenum -> Maybe (DataFrame t (ds::[Nat])) -> IO ()
-texImage2D a1 a2 a3 a4 a5 a6 a7 a8 a9 (Just a10) = texImage2D' a1 a2 a3 a4 a5 a6 a7 a8 a9 (jsval $ asArrayBufferView a10)
+texImage2D a1 a2 a3 a4 a5 a6 a7 a8 a9 (Just a10) = texImage2D' a1 a2 a3 a4 a5 a6 a7 a8 a9 (unsafeCoerce a10)
 texImage2D a1 a2 a3 a4 a5 a6 a7 a8 a9 Nothing    = texImage2D' a1 a2 a3 a4 a5 a6 a7 a8 a9 nullRef
 
 foreign import javascript unsafe "$1.texImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
@@ -369,9 +371,9 @@ foreign import javascript unsafe "$1.texParameteri($2, $3, $4)"
     texParameteri :: WebGLRenderingContext -> GLenum -> GLenum -> GLint-> IO ()
 
 foreign import javascript unsafe "$1.texSubImage2D($2, $3, $4, $5, $6, $7, $8, $9, $10)"
-    texSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> DataFrame t (ds::[Nat]) -> IO ()
---texSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> a -> IO ()
---texSubImage2D a1 a2 a3 a4 a5 a6 a7 a8 a9 = js_texSubImage2D a1 a2 a3 a4 a5 a6 a7 a8 a9 . asArrayBufferView
+    js_texSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> JSVal -> IO ()
+texSubImage2D :: WebGLRenderingContext -> GLenum -> GLint-> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> DataFrame t (ds::[Nat]) -> IO ()
+texSubImage2D a1 a2 a3 a4 a5 a6 a7 a8 a9 = js_texSubImage2D a1 a2 a3 a4 a5 a6 a7 a8 a9 . unsafeCoerce
 
 {-
 
@@ -386,9 +388,10 @@ foreign import javascript unsafe "$1.texSubImage2D()"
 foreign import javascript unsafe "$1.uniform1f($2, $3)"
     uniform1f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> IO ()
 
-foreign import javascript unsafe "$1.uniform1fv($2, $3)"
-    uniform1fv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat '[1] -> IO ()
-
+--foreign import javascript unsafe "$1.uniform1fv($2, $3)"
+--    js_uniform1fv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat ('[1] :: [Nat]) -> IO ()
+uniform1fv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat ('[] :: [Nat]) -> IO ()
+uniform1fv a b = uniform1f a b . unScalar
 
 {-
 foreign import javascript unsafe "$1.uniform1fv($2 Sequence GLfloat ->)"
@@ -396,10 +399,12 @@ foreign import javascript unsafe "$1.uniform1fv($2 Sequence GLfloat ->)"
 -}
 
 foreign import javascript unsafe "$1.uniform1i($2, $3)"
-    uniform1i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> IO ()
+    uniform1i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint -> IO ()
 
-foreign import javascript unsafe "$1.uniform1iv($2, $3)"
-    uniform1iv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLint '[1] -> IO ()
+--foreign import javascript unsafe "$1.uniform1iv($2, $3)"
+--    uniform1iv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLint '[1] -> IO ()
+uniform1iv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLint ('[] :: [Nat]) -> IO ()
+uniform1iv a b = uniform1i a b . unScalar
 
 {-
 foreign import javascript unsafe "$1.uniform1iv($2 Sequence GLint->)"
@@ -410,7 +415,9 @@ foreign import javascript unsafe "$1.uniform2f($2, $3, $4)"
     uniform2f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform2fv($2, $3)"
-    uniform2fv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat '[2] -> IO ()
+    js_uniform2fv :: WebGLRenderingContext -> WebGLUniformLocation -> JSVal -> IO ()
+uniform2fv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat '[2] -> IO ()
+uniform2fv a b = js_uniform2fv a b . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.uniform2fv($2 Sequence GLfloat ->)"
@@ -421,8 +428,9 @@ foreign import javascript unsafe "$1.uniform2i($2, $3, $4)"
     uniform2i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform2iv($2, $3)"
-    uniform2iv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLint '[2] -> IO ()
-
+    js_uniform2iv :: WebGLRenderingContext -> WebGLUniformLocation -> JSVal -> IO ()
+uniform2iv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLint '[2] -> IO ()
+uniform2iv a b = js_uniform2iv a b . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.uniform2iv($2 Sequence GLint->)"
@@ -433,8 +441,9 @@ foreign import javascript unsafe "$1.uniform3f($2, $3, $4, $5)"
     uniform3f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform3fv($2, $3)"
-    uniform3fv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat '[3] -> IO ()
-
+    js_uniform3fv :: WebGLRenderingContext -> WebGLUniformLocation -> JSVal -> IO ()
+uniform3fv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat '[3] -> IO ()
+uniform3fv a b = js_uniform3fv a b . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.uniform3fv($2 Sequence GLfloat ->)"
@@ -445,8 +454,9 @@ foreign import javascript unsafe "$1.uniform3i($2, $3, $4, $5)"
     uniform3i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> GLint-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform3iv($2, $3)"
-    uniform3iv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLint '[3] -> IO ()
-
+    js_uniform3iv :: WebGLRenderingContext -> WebGLUniformLocation -> JSVal -> IO ()
+uniform3iv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat '[3] -> IO ()
+uniform3iv a b = js_uniform3iv a b . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.uniform3iv($2 Sequence GLint->)"
@@ -457,8 +467,9 @@ foreign import javascript unsafe "$1.uniform4f($2, $3, $4, $5, $6)"
     uniform4f :: WebGLRenderingContext -> WebGLUniformLocation -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.uniform4fv($2, $3)"
-    uniform4fv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat '[4] -> IO ()
-
+    js_uniform4fv :: WebGLRenderingContext -> WebGLUniformLocation -> JSVal -> IO ()
+uniform4fv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLfloat '[4] -> IO ()
+uniform4fv a b = js_uniform4fv a b . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.uniform4fv($2 Sequence GLfloat ->)"
@@ -469,7 +480,9 @@ foreign import javascript unsafe "$1.uniform4i($2, $3, $4, $5, $6)"
     uniform4i :: WebGLRenderingContext -> WebGLUniformLocation -> GLint-> GLint-> GLint-> GLint-> IO ()
 
 foreign import javascript unsafe "$1.uniform4iv($2, $3)"
-    uniform4iv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLint '[4] -> IO ()
+    js_uniform4iv :: WebGLRenderingContext -> WebGLUniformLocation -> JSVal -> IO ()
+uniform4iv :: WebGLRenderingContext -> WebGLUniformLocation -> DataFrame GLint '[4] -> IO ()
+uniform4iv a b = js_uniform4iv a b . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.uniform4iv($2 Sequence GLint->)"
@@ -477,8 +490,9 @@ foreign import javascript unsafe "$1.uniform4iv($2 Sequence GLint->)"
 -}
 
 foreign import javascript unsafe "$1.uniformMatrix2fv($2, $3, $4)"
-    uniformMatrix2fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> DataFrame GLfloat '[2,2] -> IO ()
-
+    js_uniformMatrix2fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> JSVal -> IO ()
+uniformMatrix2fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> DataFrame GLfloat '[2,2] -> IO ()
+uniformMatrix2fv a b c = js_uniformMatrix2fv a b c . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.uniformMatrix2fv($2, $3 Sequence GLfloat ->)"
@@ -486,7 +500,9 @@ foreign import javascript unsafe "$1.uniformMatrix2fv($2, $3 Sequence GLfloat ->
 -}
 
 foreign import javascript unsafe "$1.uniformMatrix3fv($2, $3, $4)"
-    uniformMatrix3fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> DataFrame GLfloat '[3,3] -> IO ()
+    js_uniformMatrix3fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> JSVal -> IO ()
+uniformMatrix3fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> DataFrame GLfloat '[3,3] -> IO ()
+uniformMatrix3fv a b c = js_uniformMatrix3fv a b c . unsafeCoerce
 
 
 {-
@@ -495,7 +511,9 @@ foreign import javascript unsafe "$1.uniformMatrix3fv($2, $3 Sequence GLfloat ->
 -}
 
 foreign import javascript unsafe "$1.uniformMatrix4fv($2, $3, $4)"
-    uniformMatrix4fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> DataFrame GLfloat '[4,4] -> IO ()
+    js_uniformMatrix4fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> JSVal -> IO ()
+uniformMatrix4fv :: WebGLRenderingContext -> WebGLUniformLocation -> Bool -> DataFrame GLfloat '[4,4] -> IO ()
+uniformMatrix4fv a b c = js_uniformMatrix4fv a b c . unsafeCoerce
 
 
 -- SomeTypedArray m GLfloat
@@ -514,9 +532,10 @@ foreign import javascript unsafe "$1.validateProgram($2)"
 foreign import javascript unsafe "$1.vertexAttrib1f($2, $3)"
     vertexAttrib1f :: WebGLRenderingContext -> GLuint -> GLfloat -> IO ()
 
-foreign import javascript unsafe "$1.vertexAttrib1fv($2, $3)"
-    vertexAttrib1fv :: WebGLRenderingContext -> GLuint -> DataFrame GLfloat '[1] -> IO ()
-
+--foreign import javascript unsafe "$1.vertexAttrib1fv($2, $3)"
+--    vertexAttrib1fv :: WebGLRenderingContext -> GLuint -> DataFrame GLfloat '[1] -> IO ()
+vertexAttrib1fv :: WebGLRenderingContext -> GLuint -> DataFrame GLfloat ('[]::[Nat]) -> IO ()
+vertexAttrib1fv a b = vertexAttrib1f a b . unScalar
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib1fv($2 Sequence GLfloat ->)"
@@ -527,7 +546,9 @@ foreign import javascript unsafe "$1.vertexAttrib2f($2, $3, $4)"
     vertexAttrib2f :: WebGLRenderingContext -> GLuint -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib2fv($2, $3)"
-    vertexAttrib2fv :: WebGLRenderingContext -> GLuint -> DataFrame GLfloat '[2] -> IO ()
+    js_vertexAttrib2fv :: WebGLRenderingContext -> GLuint -> JSVal -> IO ()
+vertexAttrib2fv :: WebGLRenderingContext -> GLuint -> DataFrame GLfloat '[2] -> IO ()
+vertexAttrib2fv a b = js_vertexAttrib2fv a b . unsafeCoerce
 
 
 {-
@@ -539,7 +560,9 @@ foreign import javascript unsafe "$1.vertexAttrib3f($2, $3, $4, $5)"
     vertexAttrib3f :: WebGLRenderingContext -> GLuint -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib3fv($2, $3)"
-    vertexAttrib3fv :: WebGLRenderingContext -> GLuint -> DataFrame GLfloat '[3] -> IO ()
+    js_vertexAttrib3fv :: WebGLRenderingContext -> GLuint -> JSVal -> IO ()
+vertexAttrib3fv :: WebGLRenderingContext -> GLuint -> DataFrame GLfloat '[3] -> IO ()
+vertexAttrib3fv a b = js_vertexAttrib3fv a b . unsafeCoerce
 
 {-
 foreign import javascript unsafe "$1.vertexAttrib3fv($2 Sequence GLfloat ->)"
@@ -550,7 +573,9 @@ foreign import javascript unsafe "$1.vertexAttrib4f($2, $3, $4, $5, $6)"
     vertexAttrib4f :: WebGLRenderingContext -> GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
 
 foreign import javascript unsafe "$1.vertexAttrib4fv($2, $3)"
-    js_vertexAttrib4fv :: WebGLRenderingContext -> GLuint -> DataFrame GLfloat '[4] -> IO ()
+    js_vertexAttrib4fv :: WebGLRenderingContext -> GLuint -> JSVal -> IO ()
+vertexAttrib4fv :: WebGLRenderingContext -> GLuint -> DataFrame GLfloat '[4] -> IO ()
+vertexAttrib4fv a b = js_vertexAttrib4fv a b . unsafeCoerce
 
 
 {-
