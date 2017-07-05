@@ -16,8 +16,7 @@
 -----------------------------------------------------------------------------
 
 module JavaScript.WebGL.Types
-    ( ArrayBufferView, IsArrayBufferView (..)
-    , GLboolean, GLbyte, GLubyte, GLshort, GLushort, GLint, GLuint
+    ( GLboolean, GLbyte, GLubyte, GLshort, GLushort, GLint, GLuint
     , GLfixed, GLint64, GLuint64, GLsizei, GLenum, GLintptr, GLsizeiptr
     , GLsync, GLbitfield, GLhalf, GLfloat, GLclampf, GLdouble, GLclampd
     , WebGLRenderingContext
@@ -36,40 +35,8 @@ module JavaScript.WebGL.Types
 import Data.Word
 import Foreign hiding (sizeOf)
 
-import GHCJS.Types
-import JavaScript.TypedArray
-import JavaScript.TypedArray.DataView
+import GHCJS.Types (JSVal, IsJSVal, JSString)
 
-import Unsafe.Coerce (unsafeCoerce)
-
-newtype WebGLCanvas = WebGLCanvas JSVal
-instance IsJSVal WebGLCanvas
-
--- | ArrayBufferView is a helper type representing any of the JavaScript TypedArray types
-newtype ArrayBufferView = ArrayBufferView JSVal
-instance IsJSVal ArrayBufferView
-
--- | Convert any TypedArray type into ArrayBufferView
-class IsArrayBufferView a where
-    asArrayBufferView :: a -> ArrayBufferView
-    default asArrayBufferView :: IsJSVal a => a -> ArrayBufferView
-    asArrayBufferView = ArrayBufferView . jsval
-    {-# INLINE asArrayBufferView #-}
-
-instance IsArrayBufferView Int8Array
-instance IsArrayBufferView Uint8ClampedArray
-instance IsArrayBufferView Int16Array
-instance IsArrayBufferView Int32Array
-instance IsArrayBufferView Uint8Array
-instance IsArrayBufferView Uint16Array
-instance IsArrayBufferView Float32Array
-instance IsArrayBufferView Float64Array
-instance IsArrayBufferView DataView where
-  asArrayBufferView = unsafeCoerce
-  {-# INLINE asArrayBufferView #-}
-instance IsArrayBufferView MutableDataView where
-  asArrayBufferView = unsafeCoerce
-  {-# INLINE asArrayBufferView #-}
 
 
 -- | 8bit boolean.
