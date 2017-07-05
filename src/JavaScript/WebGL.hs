@@ -13,12 +13,12 @@
 --
 -----------------------------------------------------------------------------
 
-module JsHs.WebGL
-    ( module JsHs.WebGL.Types
-    , module JsHs.WebGL.Const
-    , module JsHs.WebGL.Raw
+module JavaScript.WebGL
+    ( module JavaScript.WebGL.Types
+    , module JavaScript.WebGL.Const
+    , module JavaScript.WebGL.Raw
     ) where
 
-import JsHs.WebGL.Types
-import JsHs.WebGL.Const
-import JsHs.WebGL.Raw
+import JavaScript.WebGL.Types
+import JavaScript.WebGL.Const
+import JavaScript.WebGL.Raw

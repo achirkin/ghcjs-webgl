@@ -1,5 +1,5 @@
 name: ghcjs-webgl
-version: 0.4
+version: 0.5
 cabal-version: >=1.22
 build-type: Simple
 license: MIT
@@ -11,10 +11,8 @@ homepage: http://ia.arch.ethz.ch/
 bug-reports: mailto:chirkin@arch.ethz.ch
 synopsis: GHCJS WebGL binding
 description:
-    Minimalistic, yet (hopefully) fully functional WebGL binding.
+    Minimalistic, yet fully functional WebGL binding.
     All functions are in one-to-one correspondence.
-    This package depends on ghcjs-hs-interop available on github:
-    https://github.com/achirkin/qua-kit (libs/hs/ghcjs-hs-interop)
 category: OpenGL, WebGL, GHCJS
 author: Artem Chirkin
 
@@ -24,13 +22,15 @@ source-repository head
 
 library
     exposed-modules:
-        JsHs.WebGL
-        JsHs.WebGL.Raw
-        JsHs.WebGL.Const
-        JsHs.WebGL.Types
+        JavaScript.WebGL
+        JavaScript.WebGL.Raw
+        JavaScript.WebGL.Const
+        JavaScript.WebGL.Types
     build-depends:
         base >=4.2 && <5,
-        ghcjs-hs-interop -any
+        dimensions >=0.3,
+        easytensor >=0.3,
+        ghcjs-base >=0.2.0.0
     default-language: Haskell2010
     hs-source-dirs: src
     ghc-options: -Wall -ferror-spans
@@ -40,7 +40,9 @@ test-suite SimpleWebGL
     main-is: SimpleWebGL.hs
     build-depends:
         base >=4.2 && <5,
-        ghcjs-hs-interop -any
+        dimensions >=0.3,
+        easytensor >=0.3,
+        ghcjs-base >=0.2.0.0
     default-language: Haskell2010
     hs-source-dirs: test src
     ghc-options: -Wall -ferror-spans

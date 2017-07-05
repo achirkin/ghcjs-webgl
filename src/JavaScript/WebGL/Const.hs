@@ -11,9 +11,9 @@
 --
 -----------------------------------------------------------------------------
 
-module JsHs.WebGL.Const where
+module JavaScript.WebGL.Const where
 
-import JsHs.WebGL.Types (GLenum)
+import JavaScript.WebGL.Types (GLenum)
 
 gl_DEPTH_BUFFER_BIT :: GLenum
 gl_DEPTH_BUFFER_BIT = 0x00000100

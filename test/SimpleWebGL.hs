@@ -3,13 +3,12 @@
 module Main (main) where
 
 import Prelude hiding (unlines)
-import JsHs.JSString hiding (length)
+import Data.JSString hiding (length, map)
+import JavaScript.TypedArray hiding (length)
+import JavaScript.TypedArray.ArrayBuffer
+import JavaScript.Web.Canvas (Canvas)
 
-
-import JsHs.TypedArray
-import JsHs.TypedArray.IO
-
-import JsHs.WebGL
+import JavaScript.WebGL
 
 main :: IO ()
 main = do
@@ -23,7 +22,8 @@ main = do
     (matLoc, posLoc, colLoc) <- initShaders gl
     -- supply shader with uniform matrix
     uniformMatrix4fv gl matLoc False
-        $ fromList [ 1, 0, 0, 0
+        $ floatArrayFromList
+                   [ 1, 0, 0, 0
                    , 0, 1, 0, 0
                    , 0, 0, 1, 0
                    , 0, 0, 0, 1]
@@ -101,7 +101,7 @@ getShader gl t src = do
 --   3 floats of 4 bytes each for positions,
 --   4 unsigned bytes for colors (aplha is 255)
 packVertColors :: [[GLfloat]] -> [[GLubyte]]
-               -> IOArrayBuffer -> IO ()
+               -> MutableArrayBuffer -> IO ()
 packVertColors pnts cls buf = f pnts cls 0
     where f :: [[GLfloat]] -> [[GLubyte]] -> Int -> IO ()
           f (xyz:ps) (rgb:cs) i = do
@@ -168,4 +168,7 @@ vertexShaderText = unlines [
   "}"]
 
 foreign import javascript safe "var ca = document.createElement('canvas'); ca.width = $1; ca.height = $2; document.body.appendChild(ca); $r = ca;"
-    addCanvasToBody :: Int -> Int -> IO WebGLCanvas
+    addCanvasToBody :: Int -> Int -> IO Canvas
+
+floatArrayFromList :: [Float] -> Float32Array
+floatArrayFromList = fromArray . fromList . map jsval
