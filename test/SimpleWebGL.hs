@@ -127,7 +127,7 @@ createBuffers gl Geometry { coords = pts, colors = cls, indices = mids } = do
     packVertColors pts cls barr
     -- create and bind device buffer
     buf <- createBuffer gl
-    bindBuffer gl gl_ARRAY_BUFFER buf
+    bindBuffer gl gl_ARRAY_BUFFER $ Just buf
     -- send data to device
     bufferData gl gl_ARRAY_BUFFER barr gl_STATIC_DRAW
     -- the same for indices
@@ -135,7 +135,7 @@ createBuffers gl Geometry { coords = pts, colors = cls, indices = mids } = do
         Nothing -> return (fromIntegral size, buf, Nothing)
         Just (SomeDataFrame ids) -> do
             ibuf <- createBuffer gl
-            bindBuffer gl gl_ELEMENT_ARRAY_BUFFER ibuf
+            bindBuffer gl gl_ELEMENT_ARRAY_BUFFER $ Just ibuf
             idsbuf <- thawDataFrame ids >>= arrayBuffer
             bufferData gl gl_ELEMENT_ARRAY_BUFFER idsbuf gl_STATIC_DRAW
             return (fromIntegral $ totalDim ids, buf, Just ibuf)
@@ -145,14 +145,14 @@ createBuffers gl Geometry { coords = pts, colors = cls, indices = mids } = do
 drawBuffers :: WebGLRenderingContext -> (GLuint, GLuint) -> (GLsizei, WebGLBuffer, Maybe WebGLBuffer) -> IO ()
 drawBuffers gl (posLoc, colLoc) (size,buf,mibuf) = do
     -- bind packed buffer with interleaved array inside
-    bindBuffer gl gl_ARRAY_BUFFER buf
+    bindBuffer gl gl_ARRAY_BUFFER $ Just buf
     vertexAttribPointer gl posLoc 3 gl_FLOAT False 16 0
     vertexAttribPointer gl colLoc 4 gl_UNSIGNED_BYTE True 16 12
     -- bind indices if needed and draw everything
     case mibuf of
         Nothing -> drawArrays gl gl_TRIANGLES 0 size
         Just ibuf -> do
-            bindBuffer gl gl_ELEMENT_ARRAY_BUFFER ibuf
+            bindBuffer gl gl_ELEMENT_ARRAY_BUFFER $ Just ibuf
             drawElements gl gl_TRIANGLES size gl_UNSIGNED_SHORT 0
 
 fragmentShaderText :: JSString

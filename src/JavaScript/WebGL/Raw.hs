@@ -37,17 +37,34 @@ foreign import javascript unsafe "$1.attachShader($2, $3)"
 foreign import javascript unsafe "$1.bindAttribLocation($2, $3, $4)"
     bindAttribLocation :: WebGLRenderingContext -> WebGLProgram -> GLuint -> JSString -> IO ()
 
+
+bindBuffer :: WebGLRenderingContext -> GLenum -> Maybe WebGLBuffer -> IO ()
+bindBuffer a b Nothing = js_bindBuffer a b (unsafeCoerce nullRef)
+bindBuffer a b (Just v) = js_bindBuffer a b v
+
 foreign import javascript unsafe "$1.bindBuffer($2, $3)"
-    bindBuffer :: WebGLRenderingContext -> GLenum -> WebGLBuffer -> IO ()
+    js_bindBuffer :: WebGLRenderingContext -> GLenum -> WebGLBuffer -> IO ()
+
+bindFramebuffer :: WebGLRenderingContext -> GLenum -> Maybe WebGLFramebuffer -> IO ()
+bindFramebuffer a b Nothing = js_bindFramebuffer a b (unsafeCoerce nullRef)
+bindFramebuffer a b (Just v) = js_bindFramebuffer a b v
 
 foreign import javascript unsafe "$1.bindFramebuffer($2, $3)"
-    bindFramebuffer :: WebGLRenderingContext -> GLenum -> WebGLFramebuffer -> IO ()
+    js_bindFramebuffer :: WebGLRenderingContext -> GLenum -> WebGLFramebuffer -> IO ()
+
+bindRenderbuffer :: WebGLRenderingContext -> GLenum -> Maybe WebGLRenderbuffer -> IO ()
+bindRenderbuffer a b Nothing = js_bindRenderbuffer a b (unsafeCoerce nullRef)
+bindRenderbuffer a b (Just v) = js_bindRenderbuffer a b v
 
 foreign import javascript unsafe "$1.bindRenderbuffer($2, $3)"
-    bindRenderbuffer :: WebGLRenderingContext -> GLenum -> WebGLRenderbuffer -> IO ()
+    js_bindRenderbuffer :: WebGLRenderingContext -> GLenum -> WebGLRenderbuffer -> IO ()
+
+bindTexture :: WebGLRenderingContext -> GLenum -> Maybe WebGLTexture -> IO ()
+bindTexture a b Nothing = js_bindTexture a b (unsafeCoerce nullRef)
+bindTexture a b (Just v) = js_bindTexture a b v
 
 foreign import javascript unsafe "$1.bindTexture($2, $3)"
-    bindTexture :: WebGLRenderingContext -> GLenum -> WebGLTexture -> IO ()
+    js_bindTexture :: WebGLRenderingContext -> GLenum -> WebGLTexture -> IO ()
 
 foreign import javascript unsafe "$1.blendColor($2, $3, $4, $5)"
     blendColor :: WebGLRenderingContext -> GLclampf -> GLclampf -> GLclampf -> GLclampf -> IO ()

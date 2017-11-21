@@ -1,5 +1,5 @@
 name: ghcjs-webgl
-version: 0.6
+version: 0.7
 cabal-version: >=1.22
 build-type: Simple
 license: MIT

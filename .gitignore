@@ -1,28 +1,21 @@
-dist
-cabal-dev
+# general
 *~
-*.o
+*.ini
+*.tmp
+*.[oa]
+.DS_Store
+._.DS_Store
+.project
+
+
+# haskell
+cabal.sandbox.config
+cabal.config
 *.hi
 *.chi
 *.chs.h
-.virtualenv
-.hsenv
-.HTF/
+*.summary
+.stack-work/
+dist/
+dist-newstyle/
 .cabal-sandbox/
-cabal.sandbox.config
-cabal.config
-
-# eclipse stuff
-.dist-buildwrapper/
-.project
-.settings/
-
-# leksah stuff
-*.lksf
-
-# profiling
-*.hp
-*.prof
-*.htm
-*.html
-
