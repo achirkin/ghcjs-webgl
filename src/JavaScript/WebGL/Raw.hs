@@ -25,6 +25,7 @@ import Unsafe.Coerce
 
 import Numeric.Dimensions
 import Numeric.DataFrame
+import Numeric.DataFrame.IO (IODataFrame)
 
 import JavaScript.WebGL.Types
 
@@ -325,7 +326,7 @@ foreign import javascript unsafe "$1.polygonOffset($2, $3)"
 
 foreign import javascript unsafe "$1.readPixels($2, $3, $4, $5, $6, $7, $8)"
     js_readPixels :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> JSVal -> IO ()
-readPixels :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> DataFrame t (ds::[Nat]) -> IO ()
+readPixels :: WebGLRenderingContext -> GLint-> GLint-> GLsizei-> GLsizei-> GLenum -> GLenum -> IODataFrame t (ds::[Nat]) -> IO ()
 readPixels a b c d e f g = js_readPixels a b c d e f g . unsafeCoerce
 
 foreign import javascript unsafe "$1.renderbufferStorage($2, $3, $4, $5)"
